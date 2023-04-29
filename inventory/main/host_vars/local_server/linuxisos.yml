@@ -1,0 +1,204 @@
+media_root: "/mnt"
+
+media_config_root: "{{ media_root }}/config"
+media_downloads_root: "{{ media_root }}/downloads"
+media_data_root: "{{ media_root }}/media"
+
+floatplane_username: "{{ vault_floatplane_username }}"
+floatplane_password: "{{ vault_floatplane_password }}"
+
+puid: "1000"
+pgid: "1000"
+timezone: "Europe/Amsterdam"
+
+nginx_listen_ip: "192.168.100.130"
+nginx_hostname: "blahaj.local"
+nginx_hosts:
+  - name: "deluge"
+    server_name: "deluge.{{ nginx_hostname }}"
+    ssl: false
+    ssl_redirect: false
+    ssl_cert: ""
+    ssl_key: ""
+    listen_port: "80"
+    listen_port_ssl: ""
+    listen_address: "{{ nginx_listen_ip }}"
+    location: "/"
+    upstream: "http://127.0.0.1:8112"
+  - name: "sonarr"
+    server_name: "sonarr.{{ nginx_hostname }}"
+    ssl: false
+    ssl_redirect: false
+    ssl_cert: ""
+    ssl_key: ""
+    listen_port: "80"
+    listen_port_ssl: ""
+    listen_address: "{{ nginx_listen_ip }}"
+    location: "/"
+    upstream: "http://127.0.0.1:8989"
+  - name: "radarr"
+    server_name: "radarr.{{ nginx_hostname }}"
+    ssl: false
+    ssl_redirect: false
+    ssl_cert: ""
+    ssl_key: ""
+    listen_port: "80"
+    listen_port_ssl: ""
+    listen_address: "{{ nginx_listen_ip }}"
+    location: "/"
+    upstream: "http://127.0.0.1:7878"
+  - name: "bazarr"
+    server_name: "bazarr.{{ nginx_hostname }}"
+    ssl: false
+    ssl_redirect: false
+    ssl_cert: ""
+    ssl_key: ""
+    listen_port: "80"
+    listen_port_ssl: ""
+    listen_address: "{{ nginx_listen_ip }}"
+    location: "/"
+    upstream: "http://127.0.0.1:6767"
+  - name: "nzbget"
+    server_name: "nzbget.{{ nginx_hostname }}"
+    ssl: false
+    ssl_redirect: false
+    ssl_cert: ""
+    ssl_key: ""
+    listen_port: "80"
+    listen_port_ssl: ""
+    listen_address: "{{ nginx_listen_ip }}"
+    location: "/"
+    upstream: "http://127.0.0.1:6789"
+  - name: "jackett"
+    server_name: "jackett.{{ nginx_hostname }}"
+    ssl: false
+    ssl_redirect: false
+    ssl_cert: ""
+    ssl_key: ""
+    listen_port: "80"
+    listen_port_ssl: ""
+    listen_address: "{{ nginx_listen_ip }}"
+    location: "/"
+    upstream: "http://127.0.0.1:9117"
+
+linux_isos_docker_compose_yaml:
+  version: "3.4"
+  services:
+    vpn:
+      container_name: vpn
+      image: ghcr.io/wfg/openvpn-client
+      cap_add:
+        - net_admin
+      restart: unless-stopped
+      devices:
+        - /dev/net/tun
+      volumes:
+        - "{{ media_config_root }}/vpn:/data/vpn"
+      environment:
+        - ALLOWED_SUBNETS="192.168.100.0/24"
+      ports:
+        - "127.0.0.1:9117:9117"
+        - "127.0.0.1:8112:8112"
+        - "127.0.0.1:6789:6789"
+        - "127.0.0.1:8989:8989"
+        - "127.0.0.1:7878:7878"
+        - "127.0.0.1:6767:6767"
+      security_opt:
+        - label:disable
+
+    deluge:
+      container_name: deluge
+      image: linuxserver/deluge:latest
+      restart: unless-stopped
+      network_mode: service:vpn
+      environment:
+        - "PUID={{ puid }}"
+        - "PGID={{ pgid }}"
+        - "TZ={{ timezone }}"
+      volumes:
+        - "{{ media_downloads_root }}:/downloads"
+        - "{{ media_config_root }}/deluge:/config"
+
+    jackett:
+      container_name: jackett
+      image: linuxserver/jackett:latest
+      restart: unless-stopped
+      network_mode: service:vpn
+      environment:
+        - "PUID={{ puid }}"
+        - "PGID={{ pgid }}"
+        - "TZ={{ timezone }}"
+      volumes:
+        - "/etc/localtime:/etc/localtime:ro"
+        - "{{ media_downloads_root }}/torrent-blackhole:/downloads"
+        - "{{ media_config_root }}/jackett:/config"
+
+    nzbget:
+      container_name: nzbget
+      image: linuxserver/nzbget:latest
+      restart: unless-stopped
+      network_mode: service:vpn
+      environment:
+        - "PUID={{ puid }}"
+        - "PGID={{ pgid }}"
+        - "TZ={{ timezone }}"
+      volumes:
+        - "{{ media_downloads_root }}:/downloads"
+        - "{{ media_config_root }}/nzbget:/config"
+
+    sonarr:
+      container_name: sonarr
+      image: linuxserver/sonarr:latest
+      restart: unless-stopped
+      network_mode: service:vpn
+      environment:
+        - "PUID={{ puid }}"
+        - "PGID={{ pgid }}"
+        - "TZ={{ timezone }}"
+      volumes:
+        - "/etc/localtime:/etc/localtime:ro"
+        - "{{ media_config_root }}/sonarr:/config"
+        - "{{ media_data_root }}:/{{ media_data_root }}"
+        - "{{ media_downloads_root }}:/downloads"
+
+    radarr:
+      container_name: radarr
+      image: linuxserver/radarr:latest
+      restart: unless-stopped
+      network_mode: service:vpn
+      environment:
+        - "PUID={{ puid }}"
+        - "PGID={{ pgid }}"
+        - "TZ={{ timezone }}"
+      volumes:
+        - "/etc/localtime:/etc/localtime:ro"
+        - "{{ media_config_root }}/radarr:/config"
+        - "{{ media_data_root }}:/{{ media_data_root }}"
+        - "{{ media_downloads_root }}:/downloads"
+
+    bazarr:
+      container_name: bazarr
+      image: linuxserver/bazarr
+      restart: unless-stopped
+      network_mode: service:vpn
+      environment:
+        - "PUID={{ puid }}"
+        - "PGID={{ pgid }}"
+        - "TZ={{ timezone }}"
+        - "UMASK_SET=022" # Optional
+      volumes:
+        - "{{ media_config_root }}/bazarr:/config"
+        - "{{ media_data_root }}:/{{ media_data_root }}"
+
+    floatplane-downloader:
+      image: inrix/floatplane-downloader
+      container_name: floatplane-downloader
+      environment:
+        - "headless=true"
+        - "username={{ floatplane_username }}}}"
+        - "password={{ floatplane_password }}}"
+        - "floatplane_videoResolution='1080'"
+      volumes:
+        - "{{ media_config_root }}/floatplane:/fp/db"
+        - "{{ media_data_root }}/LTT:/fp/videos"
+      restart: unless-stopped

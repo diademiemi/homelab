@@ -1,0 +1,43 @@
+server {
+    listen {{ item.listen_address }}:{{ item.listen_port }};
+    server_name {{ item.server_name }};
+
+    {% if item.ssl_redirect %}
+    if ($scheme = http) {
+        return 301 https://$host$request_uri;
+    }
+    {% else %}
+    location {{ item.location }} {
+        proxy_pass {{ item.upstream }};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    {% endif %}
+
+}
+
+{% if item.ssl %}
+
+server {
+    listen {{ item.listen_address }}:{{ item.listen_port_ssl }};
+    server_name {{ item.server_name }};
+
+    ssl_certificate {{ item.ssl_cert }};
+    ssl_certificate_key {{ item.ssl_key }};
+
+    location {{ item.location }} {
+        proxy_pass {{ item.upstream }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+}
+
+{% endif %}

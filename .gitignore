@@ -1,0 +1,9 @@
+roles/ansible_role_*
+roles/*.*
+!roles/requirements.yml
+.vscode
+.vagrant
+collections/*
+!collections/requirements.yml
+
+.vault-passwd

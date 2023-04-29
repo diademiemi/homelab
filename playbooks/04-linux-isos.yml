@@ -1,0 +1,59 @@
+---
+- name: Deploy Docker Compose
+  hosts: local_server
+  tasks:
+    - name: Install Docker Python module
+      become: true
+      ansible.builtin.pip:
+        name:
+          - docker
+          - docker-compose
+        state: present
+
+    - name: Deploy Linux ISO fetcher
+      community.docker.docker_compose:
+        project_name: linux_isos
+        definition: "{{ linux_isos_docker_compose_yaml }}"
+
+    - name: Install nginx
+      become: true
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Remove default nginx site
+      become: true
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Configure nginx
+      become: true
+      ansible.builtin.template:
+        src: nginx-site.j2
+        dest: "/etc/nginx/sites-available/{{ item.name }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ nginx_hosts }}"
+      notify:
+        - Restart nginx
+
+    - name: Enable nginx site
+      become: true
+      ansible.builtin.file:
+        src: "/etc/nginx/sites-available/{{ item.name }}"
+        dest: "/etc/nginx/sites-enabled/{{ item.name }}"
+        state: link
+      loop: "{{ nginx_hosts }}"
+      notify:
+        - Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+...

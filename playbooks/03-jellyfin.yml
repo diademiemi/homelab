@@ -1,0 +1,12 @@
+---
+- name: Install Jellyfin
+  ansible.builtin.import_playbook: diademiemi.jellyfin.install
+  vars:
+    target: local_server
+
+- name: Install Intel Arc drivers
+  ansible.builtin.import_playbook: diademiemi.jellyfin.intel_arc
+  vars:
+    target: local_server
+
+...

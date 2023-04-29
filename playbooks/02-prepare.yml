@@ -1,0 +1,54 @@
+---
+- name: Local preparation
+  hosts: local_server
+  roles:
+    - { role: diademiemi.openzfs, tags: ['openzfs', 'k3s-prepare'] }
+  tasks:
+    - name: Increase inotify watchers
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^fs.inotify.max_user_watches'
+        line: 'fs.inotify.max_user_watches=524288'
+        create: true
+        mode: '0644'
+      become: true
+    
+    - name: Add Docker GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+      become: true
+
+    - name: Add Docker repository
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable
+        state: present
+      become: true
+
+    - name: Install Docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Add user to docker group
+      ansible.builtin.user:
+        name: "diademiemi"
+        groups: docker
+        append: true
+      become: true
+
+    - name: Start and enable Docker
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+      become: true
+
+...
