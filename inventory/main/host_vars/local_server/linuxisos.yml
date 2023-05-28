@@ -4,9 +4,6 @@ media_config_root: "{{ media_root }}/config"
 media_downloads_root: "{{ media_root }}/downloads"
 media_data_root: "{{ media_root }}/media"
 
-floatplane_username: "{{ vault_floatplane_username }}"
-floatplane_password: "{{ vault_floatplane_password }}"
-
 puid: "1000"
 pgid: "1000"
 timezone: "Europe/Amsterdam"
@@ -189,16 +186,3 @@ linux_isos_docker_compose_yaml:
       volumes:
         - "{{ media_config_root }}/bazarr:/config"
         - "{{ media_data_root }}:/{{ media_data_root }}"
-
-    floatplane-downloader:
-      image: inrix/floatplane-downloader
-      container_name: floatplane-downloader
-      environment:
-        - "headless=true"
-        - "username={{ floatplane_username }}}}"
-        - "password={{ floatplane_password }}}"
-        - "floatplane_videoResolution='1080'"
-      volumes:
-        - "{{ media_config_root }}/floatplane:/fp/db"
-        - "{{ media_data_root }}/LTT:/fp/videos"
-      restart: unless-stopped

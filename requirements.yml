@@ -1,0 +1,9 @@
+---
+collections:
+  - name: diademiemi.jellyfin
+
+roles:
+  - name: diademiemi.openzfs
+  - name: diademiemi.docker
+
+...
