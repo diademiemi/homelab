@@ -21,9 +21,10 @@ repos:
       - id: check-added-large-files
 
   - repo: https://github.com/ansible/ansible-lint
-    rev: v6.16.0
+    rev: v6.17.0
     hooks:
       - id: ansible-lint
         files: \.(yaml|yml)$
+        entry: sh -c 'python3 -m pip install -r requirements.txt; python3 -m ansiblelint -v --force-color'
 
 ...
