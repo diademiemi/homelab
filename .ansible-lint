@@ -1,4 +1,9 @@
 ---
+# Allow _ and __ internal vars
+# Not necessary on 6.17.1+
+skip_list:
+  - "var-naming[no-role-prefix]"
+
 # Exclude downloaded roles and collections from linting
 exclude_paths:
   - collections/**
