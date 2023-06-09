@@ -1,0 +1,7 @@
+---
+# Exclude downloaded roles and collections from linting
+exclude_paths:
+  - collections/**
+  - roles/**
+
+...
