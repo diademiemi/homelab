@@ -1,0 +1,136 @@
+---
+- name: If we are running on a Hetzner rescue system, install Debian
+  hosts: baremetal
+  gather_facts: true
+  tags: hetzner_rescue, install_os
+  tasks:
+    - name: Check if /root/.oldroot/nfs/install/installimage exists
+      ansible.builtin.stat:
+        path: /root/.oldroot/nfs/install/installimage
+      register: installimage
+
+    - name: Install Debian 11
+      when:
+        - installimage.stat.exists
+        - ansible_facts['distribution'] == 'Debian'
+        - "'rescue' in ansible_facts['cmdline'].BOOT_IMAGE"
+        - "'rescue' in ansible_facts['cmdline'].initrd"
+        - ansible_facts['hostname'] == 'rescue'
+      block:
+        - name: Install Debian image
+          ansible.builtin.command: |
+            /root/.oldroot/nfs/install/installimage \
+            -a \
+            -i /root/images/Debian-1107-bullseye-amd64-base.tar.gz \
+            -t yes \
+            -s en \
+            -r yes \
+            -l 0
+          changed_when: true # Always true, this reinstalls the system..
+
+        - name: Reboot the server
+          ansible.builtin.reboot:
+            msg: "Reboot initiated by Ansible"
+            reboot_timeout: 600
+
+- name: Install Libvirt
+  hosts: baremetal
+  tags: libvirt
+  pre_tasks:
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+  tasks:
+    - name: Install Libvirt daemon
+      become: true
+      ansible.builtin.apt:
+        name:
+          - libvirt-daemon
+          - libvirt-daemon-system
+          - libvirt-clients
+          - qemu-kvm
+          - qemu-utils
+          - mkisofs
+        state: present
+
+    - name: Enable and start Libvirt daemon
+      become: true
+      ansible.builtin.service:
+        name: libvirtd
+        state: started
+        enabled: true
+
+- name: System setup
+  hosts: baremetal
+  tags: system
+  tasks:
+    - name: Set hostname
+      become: true
+      ansible.builtin.hostname:
+        name: "{{ system_hostname }}"
+
+- name: Deploy three VMs with Terraform
+  hosts: localhost
+  tags: terraform, vms
+  tasks:
+    - name: Deploy Terraform project
+      cloud.terraform.terraform:
+        project_path: "{{ lookup('env', 'PWD') }}/terraform"
+        state: present
+        force_init: true
+        variables_file: "{{ lookup('env', 'PWD') }}/terraform/env/vars.tfvars"
+        variables:
+          libvirt_uri: "{{ libvirt_connection_uri }}"
+
+    - name: Refresh inventory
+      ansible.builtin.meta: refresh_inventory
+
+- name: Wait for new hosts to be available
+  hosts: cloud
+  tags: wait
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH to become available
+      ansible.builtin.wait_for_connection:
+        delay: 5
+        timeout: 300
+
+- name: Install packages on all hosts
+  hosts: cloud
+  tags: packages
+  pre_tasks:
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+  tasks:
+    - name: Disable unattended upgrades
+      become: true
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: absent
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        name:
+          - curl
+          - git
+          - htop
+          - jq
+          - tmux
+          - vim
+          - wget
+          - python3-pip
+          - net-tools
+          - dnsutils
+        state: present
+
+...
