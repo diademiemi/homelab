@@ -1,0 +1,29 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-yaml
+        files: .*\.(yaml|yml)$
+        args: [--unsafe]
+      - id: check-json
+      - id: check-xml
+      - id: check-toml
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-shebang-scripts-are-executable
+      - id: check-executables-have-shebangs
+      - id: check-added-large-files
+
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v6.16.0
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$
+
+...
