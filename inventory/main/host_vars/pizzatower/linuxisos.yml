@@ -186,3 +186,5 @@ linux_isos_docker_compose_yaml:
       volumes:
         - "{{ media_config_root }}/bazarr:/config"
         - "{{ media_data_root }}:/{{ media_data_root }}"
+
+...

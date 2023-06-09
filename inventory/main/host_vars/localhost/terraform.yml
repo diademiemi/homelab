@@ -1,0 +1,7 @@
+---
+_libvirt_private_key: "{{ lookup('env', 'HOME') }}/.ssh/keys/personal-id_ed25519.key"
+libvirt_connection_uri: "qemu+ssh://root@{{ vault_libvirt_ip }}/system?no_verify=1&sshauth=privkey&keyfile={{ _libvirt_private_key }}"
+
+cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
+
+...

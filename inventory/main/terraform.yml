@@ -1,0 +1,7 @@
+---
+plugin: cloud.terraform.terraform_provider
+project_path: ./terraform/
+state_file: ""
+search_child_modules: true
+
+...

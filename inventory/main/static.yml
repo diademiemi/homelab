@@ -1,0 +1,13 @@
+---
+all:
+  children:
+    local:
+      hosts:
+        pizzatower:  # This is my NAS, I have some funny hostnames.. I pick the most recent indie game I played as hostname
+    cloud:
+      children:
+        baremetal:
+          hosts:
+            omori:  # This is a dedicated server running in Hetzner
+
+...
