@@ -1,9 +1,14 @@
 ---
 collections:
   - name: diademiemi.jellyfin
-
+  - name: cloud.terraform
+    type: git
+    source: https://github.com/diademiemi/cloud.terraform.git
+  - name: kubernetes.core
+  - name: community.docker
 roles:
   - name: diademiemi.openzfs
   - name: diademiemi.docker
+  - name: diademiemi.k3s
 
 ...
