@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"ansible.python.interpreterPath": "/bin/python3",
+		"files.associations": {
+			"**/tasks/**/*.yml": "ansible",
+			"**/vars/**/*.yml": "ansible",
+			"**/molecule/*.yml": "ansible",
+			"**/molecule/molecule.yml": "ansible",
+			"**/handlers/**/*.yml": "ansible",
+			"**/defaults/*.yml": "ansible",
+			"**/host_vars/**/*.yml": "ansible",
+			"**/group_vars/**/*.yml": "ansible",
+			"**/inventories/*.yml": "ansible",
+			"**/meta/*.yml": "ansible",
+			"**/requirements.yml": "ansible"
+		},
+		"yaml.schemas": {
+			"https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": "file:///mnt/files/Projects/DevOps/Ansible/Projects/project_homelab_v3/playbooks/hetzner/02-k3s.yml"
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"redhat.ansible",
+			"redhat.vscode-yaml",
+			"hashicorp.terraform",
+			"GitHub.copilot-nightly",
+			"GitLab.gitlab-workflow",
+			"yzhang.markdown-all-in-one"
+		]
+	}
+}
