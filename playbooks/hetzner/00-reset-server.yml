@@ -1,0 +1,167 @@
+---
+- name: RESET SERVER
+  hosts: localhost, baremetal
+  tags: hetzner_reset, hetzner_rescue
+  tasks:
+    - name: Prompt for confirmation
+      ansible.builtin.pause:
+        prompt: "This will boot the server into rescue mode and DELETE ALL DATA. Type 'yes' in all caps to confirm."
+      register: confirmation
+      when: hetzner_server_number is not defined
+      run_once: true
+      delegate_to: localhost
+
+    - name: Fail if confirmation is not 'YES'
+      ansible.builtin.fail:
+        msg: "Confirmation not 'YES'"
+      when:
+        - confirmation.user_input != "YES"
+
+    - name: Prompt for confirmation
+      ansible.builtin.pause:
+        prompt: "ARE YOU SURE? Type 'yes' in all caps to confirm."
+      register: confirmation_2
+      when: hetzner_server_number is not defined
+      run_once: true
+      delegate_to: localhost
+
+    - name: Fail if confirmation is not 'YES'
+      ansible.builtin.fail:
+        msg: "Confirmation not 'YES'"
+      when:
+        - confirmation_2.user_input != "YES"
+
+
+    - name: Query for servers
+      community.hrobot.server_info:
+        hetzner_user: "{{ hetzner_server_api_username }}"
+        hetzner_password: "{{ hetzner_server_api_password }}"
+      register: hrobot_servers
+      when: hetzner_server_number is not defined
+      run_once: true
+      delegate_to: localhost
+
+    - name: Select server automatically
+      ansible.builtin.set_fact:
+        hetzner_server_number: "{{ hrobot_servers.servers[0].server_number }}"
+      when:
+        - hetzner_server_number is not defined
+        - hrobot_servers.servers | length == 1
+
+    - name: Query SSH keys
+      community.hrobot.ssh_key_info:
+        hetzner_user: "{{ hetzner_server_api_username }}"
+        hetzner_password: "{{ hetzner_server_api_password }}"
+      register: hrobot_keys
+      when: hetzner_ssh_key is not defined
+      run_once: true
+      delegate_to: localhost
+
+    - name: Select SSH key automatically
+      ansible.builtin.set_fact:
+        hetzner_server_authorized_key: "{{ hrobot_keys.ssh_keys[0].fingerprint }}"
+      when:
+        - hetzner_ssh_key is not defined
+        - hrobot_keys.ssh_keys | length == 1
+
+    - name: "Enable rescue system for next boot"
+      community.hrobot.boot:
+        hetzner_user: "{{ hetzner_server_api_username }}"
+        hetzner_password: "{{ hetzner_server_api_password }}"
+        server_number: "{{ hetzner_server_number | int }}"
+        rescue:
+          arch: 64
+          os: linux
+          authorized_keys: "{{ hetzner_server_authorized_key }}"
+      run_once: true
+      delegate_to: localhost
+
+    - name: Wait for 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Try to reboot the server
+      block:
+        - name: Reboot server
+          ansible.builtin.reboot:
+            msg: "Reboot initiated by Ansible"
+            reboot_timeout: 600
+          run_once: true
+          delegate_to: omori
+
+      rescue:
+        - name: Reset via HRobot
+          community.hrobot.reset:
+            hetzner_user: "{{ hetzner_server_api_username }}"
+            hetzner_password: "{{ hetzner_server_api_password }}"
+            server_number: "{{ hetzner_server_number | int }}"
+            reset_type: "hardware"
+          run_once: true
+          delegate_to: localhost
+
+    - name: Clear facts
+      ansible.builtin.meta: clear_facts
+
+- name: If we are running on a Hetzner rescue system, install Debian
+  hosts: baremetal
+  gather_facts: true
+  tags: hetzner_rescue, install_os
+  tasks:
+    - name: Check if /root/.oldroot/nfs/install/installimage exists
+      ansible.builtin.stat:
+        path: /root/.oldroot/nfs/install/installimage
+      register: installimage
+
+    - name: Install Debian 11
+      when:
+        - installimage.stat.exists
+        - ansible_facts['distribution'] == 'Debian'
+        - "'rescue' in ansible_facts['cmdline'].BOOT_IMAGE"
+        - "'rescue' in ansible_facts['cmdline'].initrd"
+        - ansible_facts['hostname'] == 'rescue'
+      block:
+        - name: Install Debian image
+          ansible.builtin.command: |
+            /root/.oldroot/nfs/install/installimage \
+            -a \
+            -i /root/images/Debian-1107-bullseye-amd64-base.tar.gz \
+            -t yes \
+            -s en \
+            -r yes \
+            -l 0
+          changed_when: true # Always true, this reinstalls the system..
+
+        - name: Reboot the server
+          ansible.builtin.reboot:
+            msg: "Reboot initiated by Ansible"
+            reboot_timeout: 600
+
+        - name: Clear facts
+          ansible.builtin.meta: clear_facts
+
+    - name: Wait for host to come back
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 600
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+    - name: Remove ssh host key from localhost
+      ansible.builtin.command: |
+        ssh-keygen -f "~/.ssh/known_hosts" -R "{{ hostvars['omori']['ansible_facts']['default_ipv4']['address'] }}"
+      run_once: true
+      changed_when: true
+      delegate_to: localhost
+
+    - name: Remove tfstate file
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../../terraform/vms/{{ item }}"
+        state: absent
+      run_once: true
+      delegate_to: localhost
+      loop:
+        - terraform.tfstate
+        - terraform.tfstate.backup
+
+...
