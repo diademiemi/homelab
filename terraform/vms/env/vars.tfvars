@@ -15,6 +15,7 @@ vms = [
         ]
 
         dhcp = true
+
         libvirt_external_interface = "enp34s0"
         mac = "00:50:56:01:00:78"
 
@@ -25,7 +26,7 @@ vms = [
         ansible_host   = "aubrey"
     },
     {
-        hostname = "basil" # For services I host that need to be publically accessible
+        hostname = "kel" # For services I host that need to be publically accessible
         domain = "blahaj.sh"
 
         vcpu = 6
@@ -40,6 +41,7 @@ vms = [
         ]
 
         dhcp = true
+
         libvirt_external_interface = "enp34s0"
         mac = "00:50:56:00:EB:41"
 
@@ -47,7 +49,7 @@ vms = [
 
         ansible_groups = ["cloud", "hetzner_vm", "vm2"]
         ansible_user   = "debian"
-        ansible_host   = "basil"
+        ansible_host   = "kel"
     },
     {
         hostname = "hero" # For a group of people I'm working with, https://github.com/queercoded-dev
@@ -65,6 +67,7 @@ vms = [
         ]
 
         dhcp = true
+
         libvirt_external_interface = "enp34s0"
         mac = "00:50:56:00:8F:E9"
 

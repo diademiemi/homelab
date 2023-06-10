@@ -14,6 +14,8 @@ variable "vms" {
         vcpu = number
         memory = number
 
+        autostart = optional(bool)
+
         cloudinit_image = string
 
         disk_size = optional(number)

@@ -1,6 +1,6 @@
 module "vm" {
   source  = "diademiemi/vm/libvirt"
-  version = "2.1.2"
+  version = "2.2.0"
 
   for_each = { for vm in var.vms : vm.hostname => vm }
 
@@ -9,6 +9,8 @@ module "vm" {
 
     vcpu = each.value.vcpu
     memory = each.value.memory
+
+    autostart = each.value.autostart
 
     cloudinit_image = each.value.cloudinit_image
 
