@@ -1,0 +1,78 @@
+---
+- name: Set up a K3S cluster on host
+  hosts: baremetal
+  gather_facts: true
+  roles:
+    - { role: diademiemi.k3s, tags: ["k3s", "deploy"]}
+    - { role: diademiemi.helm, tags: ["helm", "deploy"]}
+  post_tasks:
+    - name: Ensure Python3 pip is installed
+      ansible.builtin.package:
+        name: python3-pip
+        state: present
+
+    - name: Install Python Kubernetes modules
+      ansible.builtin.pip:
+        name:
+          - kubernetes
+          - pyyaml
+        state: present
+
+- name: Set up Rancher
+  hosts: baremetal
+  tasks:
+    - name: Install Rancher
+      block:
+        - name: "Setup | Generate bootstrap password"
+          ansible.builtin.set_fact:
+            rancher_bootstrap_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          when: rancher_bootstrap_password is not defined
+
+        # https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli
+        - name: "Setup | Add cert-manager repository"
+          become: true
+          kubernetes.core.helm_repository:
+            name: "jetstack"
+            repo_url: "https://charts.jetstack.io"
+
+        - name: "Setup | Add Rancher Helm repository"
+          become: true
+          kubernetes.core.helm_repository:
+            name: "rancher-stable"
+            repo_url: "https://releases.rancher.com/server-charts/stable"
+
+        - name: "Setup | Install cert-manager"
+          kubernetes.core.helm:
+            kubeconfig: "{{ kubeconfig_path }}"
+            chart_ref: "jetstack/cert-manager"
+            chart_version: "v1.12.0"  # Supported by Rancher
+            release_name: "cert-manager"
+            namespace: "cert-manager"
+            create_namespace: true
+            values:
+              installCRDs: true
+
+        - name: "Setup | Install Rancher"
+          kubernetes.core.helm:
+            kubeconfig: "{{ kubeconfig_path }}"
+            chart_ref: "rancher-stable/rancher"
+            release_name: "rancher"
+            namespace: "cattle-system"
+            create_namespace: true
+            values:
+              replicas: 1
+              hostname: "{{ ansible_facts['fqdn'] }}"
+              bootstrapPassword: "{{ rancher_bootstrap_password }}"
+              ingress:
+                enabled: true
+              global:
+                cattle:
+                  psp:
+                    enabled: false # For K3S
+
+        - name: "Setup | Give Bootstrap password"
+          ansible.builtin.debug:
+            msg: "Rancher server is running. Access it at `{{ ansible_facts['fqdn'] }}`
+              The bootstrap password is `{{ rancher_bootstrap_password }}`"
+
+...
