@@ -1,6 +1,6 @@
 ---
 plugin: cloud.terraform.terraform_provider
-project_path: ./terraform/
+project_path: ./terraform/vms
 state_file: ""
 search_child_modules: true
 
