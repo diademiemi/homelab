@@ -1,0 +1,177 @@
+---
+- name: Install Libvirt
+  hosts: baremetal
+  tags: libvirt, terraform
+  pre_tasks:
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+  tasks:
+    - name: Install Libvirt daemon
+      become: true
+      ansible.builtin.apt:
+        name:
+          - libvirt-daemon
+          - libvirt-daemon-system
+          - libvirt-clients
+          - qemu-kvm
+          - qemu-utils
+          - mkisofs
+        state: present
+
+    - name: Enable and start Libvirt daemon
+      become: true
+      ansible.builtin.service:
+        name: libvirtd
+        state: started
+        enabled: true
+
+    - name: Create "default" storage pool
+      become: true
+      ansible.builtin.command: |
+        virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
+      register: virsh_pool
+      failed_when: virsh_pool.rc != 0 and 'already exists' not in virsh_pool.stderr
+      changed_when: virsh_pool.rc == 0
+
+    - name: Start "default" storage pool
+      become: true
+      ansible.builtin.shell: |
+        virsh pool-autostart default
+        virsh pool-start default
+      register: virsh_pool_start
+      failed_when: virsh_pool_start.rc != 0 and 'is already active' not in virsh_pool_start.stderr
+      changed_when: virsh_pool_start.rc == 0
+
+- name: System setup
+  hosts: baremetal
+  tags: system
+  tasks:
+
+- name: Deploy three VMs with Terraform
+  hosts: localhost
+  tags: terraform, vms
+  tasks:
+    - name: Deploy Terraform project
+      cloud.terraform.terraform:
+        project_path: "{{ lookup('env', 'PWD') }}/terraform/vms"
+        state: present
+        force_init: true
+        variables_files: "{{ terraform_vms_tfvars_files }}"
+        variables:
+          libvirt_uri: "{{ libvirt_connection_uri }}"
+
+    - name: Refresh inventory
+      ansible.builtin.meta: refresh_inventory
+
+- name: Wait for new hosts to be available
+  hosts: cloud
+  tags: wait
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH to become available
+      ansible.builtin.wait_for_connection:
+        delay: 5
+        timeout: 300
+
+- name: Set DNS records for hosts
+  hosts: localhost, cloud
+  tags: terraform, dns
+  gather_facts: true
+  tasks:
+
+# - name: Remove untargeted hosts from hostvars
+#   ansible.builtin.set_fact:
+#     play_hostvars: "{{ play_hostvars | default({}) | combine({item.key: item.value}) }}"
+#   when: item.key in ansible_play_hosts
+#   loop: "{{ hostvars | dict2items }}"
+    - name: Set hostname
+      become: true
+      ansible.builtin.hostname:
+        name: "{{ system_hostname }}"
+      when: system_hostname is defined
+
+    - name: Add hostname to /etc/hosts
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_default_ipv4.address }} {{ system_hostname }}"
+        regexp: "^{{ ansible_default_ipv4.address }}"
+        state: present
+      when: system_hostname is defined
+
+    - name: Regather facts
+      ansible.builtin.setup:
+      when: system_hostname is defined
+
+    - name: Set DNS variable mapping
+      ansible.builtin.set_fact:
+        dns_records: "{{ dns_records | default([]) + [dns_record] }}"
+      vars:
+        split_domain: "{{ item.value.ansible_fqdn | split('.') }}"
+        tld: "{{ split_domain[-1] }}"
+        domain: "{{ split_domain[-2] }}"
+        dns_record:
+          zone_id: "{{ terraform_domain_zone_map[domain][tld] }}"
+          name: "{{ item.value.ansible_hostname }}"
+          value: "{{ item.value.ansible_default_ipv4.address }}"
+          type: "A"
+          ttl: 1
+          proxied: false
+          allow_overwrite: true
+      loop: "{{ hostvars | dict2items }}"
+      when: item.key in ansible_play_hosts and item.key != 'localhost'
+      delegate_to: localhost
+      run_once: true
+      no_log: true
+
+    - name: Set DNS records with Terraform
+      cloud.terraform.terraform:
+        project_path: "{{ lookup('env', 'PWD') }}/terraform/dns"
+        state: present
+        force_init: true
+        variables:
+          cloudflare_api_token: "{{ cloudflare_api_token }}"
+          dns_records: "{{ dns_records | to_json }}"
+      delegate_to: localhost
+      run_once: true
+
+- name: Install packages on all hosts
+  hosts: cloud
+  tags: packages
+  pre_tasks:
+    - name: Update apt cache
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false
+      when: ansible_facts['pkg_mgr'] == 'apt'
+
+  tasks:
+    - name: Disable unattended upgrades
+      become: true
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: absent
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        name:
+          - curl
+          - git
+          - htop
+          - jq
+          - tmux
+          - vim
+          - wget
+          - python3-pip
+          - net-tools
+          - dnsutils
+        state: present
+
+...
