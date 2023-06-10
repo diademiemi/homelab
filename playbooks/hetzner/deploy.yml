@@ -1,0 +1,14 @@
+---
+- name: Reset server
+  tags: reset, never
+  ansible.builtin.import_playbook: 00-reset-server.yml
+
+- name: Deploy servers
+  tags: servers, always
+  ansible.builtin.import_playbook: 01-deploy-servers.yml
+
+- name: Deploy Rancher
+  tags: rancher, always
+  ansible.builtin.import_playbook: 02-rancher.yml
+
+...
