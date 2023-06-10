@@ -1,4 +1,8 @@
 ---
-k3s_version: "v1.27.2+k3s1"
+k3s_version: "v1.25.10+k3s1"
+
+k3s_extra_server_args: "--node-name {{ ansible_facts['hostname'] }}"
+
+kubeconfig_path: "/etc/rancher/k3s/k3s.yaml"
 
 ...
