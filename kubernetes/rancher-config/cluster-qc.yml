@@ -1,0 +1,62 @@
+apiVersion: provisioning.cattle.io/v1
+kind: Cluster
+metadata:
+  annotations:
+    field.cattle.io/description: Cluster for Queer Coded
+  finalizers:
+    - wrangler.cattle.io/cloud-config-secret-remover
+    - wrangler.cattle.io/provisioning-cluster-remove
+    - wrangler.cattle.io/rke-cluster-remove
+  name: qc
+  namespace: fleet-default
+spec:
+  kubernetesVersion: v1.25.9+k3s1
+  localClusterAuthEndpoint: {}
+  rkeConfig:
+    chartValues: {}
+    etcd:
+      snapshotRetention: 5
+      snapshotScheduleCron: 0 */5 * * *
+    machineGlobalConfig:
+      disable-apiserver: false
+      disable-cloud-controller: false
+      disable-controller-manager: false
+      disable-etcd: false
+      disable-kube-proxy: false
+      disable-network-policy: false
+      disable-scheduler: false
+      etcd-expose-metrics: false
+      secrets-encryption: false
+    machineSelectorConfig:
+      - config:
+          docker: false
+          protect-kernel-defaults: false
+          selinux: false
+    registries: {}
+    upgradeStrategy:
+      controlPlaneConcurrency: '1'
+      controlPlaneDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        ignoreErrors: false
+        postDrainHooks: null
+        preDrainHooks: null
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120
+      workerConcurrency: '1'
+      workerDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        ignoreErrors: false
+        postDrainHooks: null
+        preDrainHooks: null
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120
