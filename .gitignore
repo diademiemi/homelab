@@ -11,6 +11,7 @@
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+**/*secret.tfvars
 
 # Ansible
 /tests/output/
