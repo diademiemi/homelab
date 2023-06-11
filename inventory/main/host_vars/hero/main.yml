@@ -1,4 +1,6 @@
 ---
 rancher_downstream_cluster_name: "qc"
 
+agekey: "{{ vault_agekey }}"
+
 ...
