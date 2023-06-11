@@ -1,3 +1,5 @@
+defaultNamespace: longhorn-system
+
 helm:
   releaseName: longhorn-crd
   chart: longhorn-crd
