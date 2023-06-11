@@ -9,6 +9,23 @@
         path: "{{ kubeconfig_path }}"
         timeout: 300
 
+    - name: Wait for namespace kube-system to exist
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        kind: "Namespace"
+        name: "kube-system"
+      register: namespace
+      retries: 60
+      delay: 5
+      until: |
+        namespace.resources is defined and
+        namespace.resources | length > 0 and
+        namespace.resources[0].metadata is defined and
+        namespace.resources[0].metadata.name is defined and
+        namespace.resources[0].metadata.name == "kube-system"
+
+
     - name: Create ArgoCD namespace
       become: true
       kubernetes.core.k8s:
