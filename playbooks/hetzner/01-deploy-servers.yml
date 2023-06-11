@@ -61,7 +61,8 @@
         project_path: "{{ lookup('env', 'PWD') }}/terraform/vms"
         state: present
         force_init: true
-        variables_files: "{{ terraform_vms_tfvars_files }}"
+        variables_files:
+          - "{{ lookup('env', 'PWD') }}/terraform/vms/env/vars.tfvars"
         variables:
           libvirt_uri: "{{ libvirt_connection_uri }}"
 
