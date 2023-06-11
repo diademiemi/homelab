@@ -1,78 +1,188 @@
 ---
-- name: Set up a K3S cluster on host
-  hosts: baremetal
-  gather_facts: true
+- name: Set up a K3S cluster for Rancher
+  hosts: rancher
+  tags: upstream, rancher, k3s
   roles:
     - { role: diademiemi.k3s, tags: ["k3s", "deploy"]}
     - { role: diademiemi.helm, tags: ["helm", "deploy"]}
   post_tasks:
     - name: Ensure Python3 pip is installed
+      become: true
       ansible.builtin.package:
         name: python3-pip
         state: present
 
     - name: Install Python Kubernetes modules
+      become: true
       ansible.builtin.pip:
         name:
           - kubernetes
           - pyyaml
         state: present
 
-- name: Set up Rancher
-  hosts: baremetal
+- name: Generate bootstrap password
+  hosts: localhost, rancher
+  tags: rancher, always
   tasks:
+    - name: Generate bootstrap password
+      ansible.builtin.set_fact:
+        rancher_bootstrap_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      when: rancher_bootstrap_password is not defined
+      delegate_to: localhost
+      run_once: true
+
+- name: Set up and bootstrap Rancher
+  hosts: rancher
+  tags: upstream, rancher, bootstrap
+  tasks:
+    # https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli
+    - name: Add cert-manager repository
+      become: true
+      kubernetes.core.helm_repository:
+        name: "jetstack"
+        repo_url: "https://charts.jetstack.io"
+
+    - name: Add Rancher Helm repository
+      become: true
+      kubernetes.core.helm_repository:
+        name: "rancher-stable"
+        repo_url: "https://releases.rancher.com/server-charts/stable"
+
+    - name: Install cert-manager
+      become: true
+      kubernetes.core.helm:
+        kubeconfig: "{{ kubeconfig_path }}"
+        chart_ref: "jetstack/cert-manager"
+        chart_version: "v1.12.0"  # Supported by Rancher
+        release_name: "cert-manager"
+        namespace: "cert-manager"
+        create_namespace: true
+        values:
+          installCRDs: true
+
     - name: Install Rancher
-      block:
-        - name: "Setup | Generate bootstrap password"
-          ansible.builtin.set_fact:
-            rancher_bootstrap_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
-          when: rancher_bootstrap_password is not defined
+      become: true
+      kubernetes.core.helm:
+        kubeconfig: "{{ kubeconfig_path }}"
+        chart_ref: "rancher-stable/rancher"
+        release_name: "rancher"
+        namespace: "cattle-system"
+        create_namespace: true
+        values:
+          replicas: 1
+          hostname: "{{ ansible_facts['fqdn'] }}"
+          bootstrapPassword: "{{ rancher_bootstrap_password }}"
+          ingress:
+            enabled: true
+          global:
+            cattle:
+              psp:
+                enabled: false # For K3S
 
-        # https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli
-        - name: "Setup | Add cert-manager repository"
-          become: true
-          kubernetes.core.helm_repository:
-            name: "jetstack"
-            repo_url: "https://charts.jetstack.io"
+    - name: Wait for rancher to be ready
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        kind: "Deployment"
+        api_version: "apps/v1"
+        namespace: "cattle-system"
+        label_selectors:
+          - "app=rancher"
+      register: rancher_deployment
+      retries: 60
+      delay: 5
+      until: |
+        rancher_deployment.resources | length > 0 and
+        rancher_deployment.resources[0].status is defined and
+        rancher_deployment.resources[0].status.replicas is defined and
+        rancher_deployment.resources[0].status.readyReplicas is defined and
+        rancher_deployment.resources[0].status.readyReplicas == rancher_deployment.resources[0].status.replicas
 
-        - name: "Setup | Add Rancher Helm repository"
-          become: true
-          kubernetes.core.helm_repository:
-            name: "rancher-stable"
-            repo_url: "https://releases.rancher.com/server-charts/stable"
+    - name: "Give Bootstrap password"
+      ansible.builtin.debug:
+        msg: "Rancher server is running. Access it at `{{ ansible_facts['fqdn'] }}`
+          The bootstrap password is `{{ rancher_bootstrap_password }}`"
 
-        - name: "Setup | Install cert-manager"
-          kubernetes.core.helm:
-            kubeconfig: "{{ kubeconfig_path }}"
-            chart_ref: "jetstack/cert-manager"
-            chart_version: "v1.12.0"  # Supported by Rancher
-            release_name: "cert-manager"
-            namespace: "cert-manager"
-            create_namespace: true
-            values:
-              installCRDs: true
+    # - name: Add Fleet project
+    #   become: true
+    #   kubernetes.core.k8s:
+    #     state: present
+    #     kubeconfig: "{{ kubeconfig_path }}"
+    #     definition:
+    #       apiVersion: fleet.cattle.io/v1alpha1
+    #       kind: GitRepo
+    #       metadata:
+    #         name: rancher-config
+    #         namespace: fleet-local
+    #       spec:
+    #         branch: main
+    #         insecureSkipTLSVerify: false
+    #         paths:
+    #           - /kubernetes/rancher-config
+    #         repo: https://github.com/diademiemi/project_homelab_v3.git
+    #         targets:
+    #           - clusterSelector:
+    #               matchExpressions:
+    #                 - key: provider.cattle.io
+    #                   operator: NotIn
+    #                   values:
+    #                     - harvester
 
-        - name: "Setup | Install Rancher"
-          kubernetes.core.helm:
-            kubeconfig: "{{ kubeconfig_path }}"
-            chart_ref: "rancher-stable/rancher"
-            release_name: "rancher"
-            namespace: "cattle-system"
-            create_namespace: true
-            values:
-              replicas: 1
-              hostname: "{{ ansible_facts['fqdn'] }}"
-              bootstrapPassword: "{{ rancher_bootstrap_password }}"
-              ingress:
-                enabled: true
-              global:
-                cattle:
-                  psp:
-                    enabled: false # For K3S
+- name: Deploy Rancher config with Terraform
+  hosts: localhost
+  tasks:
+    - name: Bootstrap cluster with Terraform
+      cloud.terraform.terraform:
+        project_path: "{{ lookup('env', 'PWD') }}/terraform/rancher"
+        state: present
+        force_init: true
+        variables_files:
+          - "{{ lookup('env', 'PWD') }}/terraform/rancher/env/vars.tfvars"
+        variables:
+          rancher_bootstrap_password: "{{ rancher_bootstrap_password }}"
+          rancher_users: "{{ terraform_rancher_users | to_json }}"
+      register: rancher_terraform
 
-        - name: "Setup | Give Bootstrap password"
-          ansible.builtin.debug:
-            msg: "Rancher server is running. Access it at `{{ ansible_facts['fqdn'] }}`
-              The bootstrap password is `{{ rancher_bootstrap_password }}`"
+- name: Set up personal cluster
+  hosts: personal
+  tags: downstream, personal
+  tasks:
+    - name: Run node command
+      become: true
+      ansible.builtin.shell: |
+        set -o pipefail
+        {{ hostvars['localhost']['rancher_terraform']['outputs']['cluster_personal_node_command']['value'] }} \
+        {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
+      args:
+        creates: /etc/rancher/k3s
+        executable: /bin/bash
+
+- name: Set up public cluster
+  hosts: public
+  tags: downstream, public
+  tasks:
+    - name: Run node command
+      become: true
+      ansible.builtin.shell: |
+        set -o pipefail
+        {{ hostvars['localhost']['rancher_terraform']['outputs']['cluster_public_node_command']['value'] }} \
+        {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
+      args:
+        creates: /etc/rancher/k3s
+        executable: /bin/bash
+
+- name: Set up qc cluster
+  hosts: qc
+  tags: downstream, qc
+  tasks:
+    - name: Run node command
+      become: true
+      ansible.builtin.shell: |
+        set -o pipefail
+        {{ hostvars['localhost']['rancher_terraform']['outputs']['cluster_qc_node_command']['value'] }} \
+        {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
+      args:
+        creates: /etc/rancher/k3s
+        executable: /bin/bash
 
 ...
