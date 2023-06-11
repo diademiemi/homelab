@@ -11,8 +11,8 @@
   tags: rancher, always
   ansible.builtin.import_playbook: 02-rancher.yml
 
-# - name: Deploy applications
-#   tags: deploy, always
-#   ansible.builtin.import_playbook: 03-applications.yml
+- name: Deploy applications
+  tags: applications, always
+  ansible.builtin.import_playbook: 03-applications.yml
 
 ...
