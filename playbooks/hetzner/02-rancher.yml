@@ -17,6 +17,25 @@
           - pyyaml
         state: present
 
+- name: Install Longhorn dependencies
+  hosts: downstream
+  tags: dependencies
+  tasks:
+    - name: Install Longhorn dependencies
+      become: true
+      ansible.builtin.package:
+        name:
+          - open-iscsi
+          - nfs-client
+          - nfs-common
+        state: present
+
+    - name: Enable iscsid service
+      ansible.builtin.service:
+        name: iscsid
+        enabled: true
+        state: started
+
 
 - name: Set up a K3S cluster for Rancher
   hosts: rancher
