@@ -1,0 +1,42 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: global-proj
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  description: ArgoCD project to be deployed on all clusters
+  destinations:
+    - namespace: '*'
+      server: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  sourceRepos:  
+    - '*'
+...
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: global-app
+  namespace: argocd
+spec:
+  project: global-proj
+  destination:
+    namespace: 'default' # Please set per resource
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: https://github.com/diademiemi/project_homelab_v3.git
+    targetRevision: 'main'
+    path: 'kubernetes/argocd-global'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+...

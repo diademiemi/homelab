@@ -1,0 +1,33 @@
+helmCharts:
+- name: tonetag
+  releaseName: tonetag
+  version: "2.0.0"
+  repo: https://tonetag.github.io/charts
+  includeCRDs: false
+  valuesInline:
+    replicaCount: 5
+    
+    ingress:
+      enabled: true
+      className: "traefik"
+      annotations:
+        kubernetes.io/tls-acme: "false"
+        traefik.ingress.kubernetes.io/router.entrypoints: "web, websecure"
+        traefik.ingress.kubernetes.io/router.tls: "true"
+      hosts:
+        - host: ""
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+      - secretName: tonetag-cert
+        hosts:
+          - "tonetag.is"
+          - "dev.tonetag.is"
+
+generators:
+  - ./kustomize-secret-generator.yaml
+
+resources:
+  - ./cert-tonetag.yaml
+  - ./issuer-tonetag.yaml

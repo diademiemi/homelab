@@ -1,0 +1,42 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: tonetag-proj
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  description: Tonetag Setup
+  destinations:
+    - namespace: '*'
+      server: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  sourceRepos:  
+    - '*'
+...
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tonetag-app
+  namespace: argocd
+spec:
+  project: tonetag-proj
+  destination:
+    namespace: 'tonetag'
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: https://github.com/tonetag/deployment.git
+    targetRevision: 'main'
+    path: 'argocd/tonetag'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+...
