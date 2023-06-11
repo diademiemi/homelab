@@ -70,6 +70,7 @@
       kubernetes.core.helm:
         kubeconfig: "{{ kubeconfig_path }}"
         chart_ref: "rancher-{{ rancher_release_type }}/rancher"
+        chart_version: "{{ rancher_version }}"  # Supported by Rancher
         release_name: "rancher"
         namespace: "cattle-system"
         create_namespace: true
