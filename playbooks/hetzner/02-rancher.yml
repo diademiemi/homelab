@@ -1,11 +1,8 @@
 ---
-- name: Set up a K3S cluster for Rancher
-  hosts: rancher
-  tags: upstream, rancher, k3s
-  roles:
-    - { role: diademiemi.k3s, tags: ["k3s", "deploy"]}
-    - { role: diademiemi.helm, tags: ["helm", "deploy"]}
-  post_tasks:
+- name: Install Ansible pip dependencies
+  hosts: cloud
+  tags: dependencies
+  tasks:
     - name: Ensure Python3 pip is installed
       become: true
       ansible.builtin.package:
@@ -19,6 +16,14 @@
           - kubernetes
           - pyyaml
         state: present
+
+
+- name: Set up a K3S cluster for Rancher
+  hosts: rancher
+  tags: upstream, rancher, k3s
+  roles:
+    - { role: diademiemi.k3s, tags: ["k3s", "deploy"]}
+    - { role: diademiemi.helm, tags: ["helm", "deploy"]}
 
 - name: Generate bootstrap password
   hosts: localhost, rancher
@@ -45,8 +50,8 @@
     - name: Add Rancher Helm repository
       become: true
       kubernetes.core.helm_repository:
-        name: "rancher-stable"
-        repo_url: "https://releases.rancher.com/server-charts/stable"
+        name: "rancher-{{ rancher_release_type }}"
+        repo_url: "https://releases.rancher.com/server-charts/{{ rancher_release_type }}"
 
     - name: Install cert-manager
       become: true
@@ -64,7 +69,7 @@
       become: true
       kubernetes.core.helm:
         kubeconfig: "{{ kubeconfig_path }}"
-        chart_ref: "rancher-stable/rancher"
+        chart_ref: "rancher-{{ rancher_release_type }}/rancher"
         release_name: "rancher"
         namespace: "cattle-system"
         create_namespace: true
