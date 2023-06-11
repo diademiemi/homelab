@@ -1,0 +1,63 @@
+---
+- name: Deploy sops-age-key secret
+  hosts: downstream
+  tags: downstream, rancher, argocd
+  tasks:
+    - name: Create ArgoCD namespace
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: argocd
+            labels:
+              name: argocd
+
+    - name: Add sops-age-key secret
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: argocd
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: sops-age-key
+          type: Opaque
+          data:
+            keys.txt: "{{ agekey | b64encode }}"
+
+- name: Deploy global Fleet project
+  hosts: upstream
+  tags: upstream, rancher, argocd, fleet
+  tasks:
+    - name: Add Fleet project
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: fleet.cattle.io/v1alpha1
+          kind: GitRepo
+          metadata:
+            name: rancher-config
+            namespace: fleet-default
+          spec:
+            branch: main
+            insecureSkipTLSVerify: false
+            paths:
+              - /kubernetes/fleet-global
+            repo: https://github.com/diademiemi/project_homelab_v3.git
+            targets:
+              - clusterSelector:
+                  matchExpressions:
+                    - key: provider.cattle.io
+                      operator: NotIn
+                      values:
+                        - harvester
+
+...
