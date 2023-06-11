@@ -103,33 +103,9 @@
         msg: "Rancher server is running. Access it at `{{ ansible_facts['fqdn'] }}`
           The bootstrap password is `{{ rancher_bootstrap_password }}`"
 
-    # - name: Add Fleet project
-    #   become: true
-    #   kubernetes.core.k8s:
-    #     state: present
-    #     kubeconfig: "{{ kubeconfig_path }}"
-    #     definition:
-    #       apiVersion: fleet.cattle.io/v1alpha1
-    #       kind: GitRepo
-    #       metadata:
-    #         name: rancher-config
-    #         namespace: fleet-local
-    #       spec:
-    #         branch: main
-    #         insecureSkipTLSVerify: false
-    #         paths:
-    #           - /kubernetes/rancher-config
-    #         repo: https://github.com/diademiemi/project_homelab_v3.git
-    #         targets:
-    #           - clusterSelector:
-    #               matchExpressions:
-    #                 - key: provider.cattle.io
-    #                   operator: NotIn
-    #                   values:
-    #                     - harvester
-
 - name: Deploy Rancher config with Terraform
   hosts: localhost
+  tags: rancher, terraform
   tasks:
     - name: Bootstrap cluster with Terraform
       cloud.terraform.terraform:
@@ -143,43 +119,15 @@
           rancher_users: "{{ terraform_rancher_users | to_json }}"
       register: rancher_terraform
 
-- name: Set up personal cluster
-  hosts: personal
-  tags: downstream, personal
+- name: Set up downstream clusters
+  hosts: downstream
+  tags: downstream, rancher
   tasks:
     - name: Run node command
       become: true
       ansible.builtin.shell: |
         set -o pipefail
-        {{ hostvars['localhost']['rancher_terraform']['outputs']['cluster_personal_node_command']['value'] }} \
-        {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
-      args:
-        creates: /etc/rancher/k3s
-        executable: /bin/bash
-
-- name: Set up public cluster
-  hosts: public
-  tags: downstream, public
-  tasks:
-    - name: Run node command
-      become: true
-      ansible.builtin.shell: |
-        set -o pipefail
-        {{ hostvars['localhost']['rancher_terraform']['outputs']['cluster_public_node_command']['value'] }} \
-        {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
-      args:
-        creates: /etc/rancher/k3s
-        executable: /bin/bash
-
-- name: Set up qc cluster
-  hosts: qc
-  tags: downstream, qc
-  tasks:
-    - name: Run node command
-      become: true
-      ansible.builtin.shell: |
-        set -o pipefail
-        {{ hostvars['localhost']['rancher_terraform']['outputs']['cluster_qc_node_command']['value'] }} \
+        {{ hostvars['localhost']['rancher_terraform']['outputs']['rancher_cluster_node_commands']['value'][rancher_downstream_cluster_name] }} \
         {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
       args:
         creates: /etc/rancher/k3s
