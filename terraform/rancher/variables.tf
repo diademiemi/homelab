@@ -28,8 +28,14 @@ variable "rancher_users" {
     }))
 } # Fed from Ansible so I can use Ansible Vault to encrypt the password
 
-variable "cluster_k3s_version" {
-    description = "K3s version"
-    default     = "v1.25.9+k3s1"
-    type = string
+variable "rancher_clusters" {
+    description = "List of downstream clusters to create"
+    default     = []
+    type = list(object({
+        name = string
+        fleet_namespace = string
+        kubernetes_version = string
+        enable_network_policy = optional(bool)
+        default_cluster_role_for_project_members = optional(string)
+    }))
 }
