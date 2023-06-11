@@ -8,7 +8,6 @@ collections:
   - name: community.docker
 roles:
   - name: diademiemi.openzfs
-  - name: diademiemi.docker
   - name: diademiemi.k3s
   - name: diademiemi.helm
 
