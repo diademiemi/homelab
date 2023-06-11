@@ -2,7 +2,7 @@ defaultNamespace: argocd
 helm:
   releaseName: argocd
   chart: argocd
-  repo: https://git.rancher.io/partner-charts
+  repo: https://partner-charts.rancher.io/
   version: "5.36.1"
 
   values:
