@@ -4,13 +4,17 @@ libvirt_connection_uri: "qemu+ssh://root@{{ vault_libvirt_ip }}/system?no_verify
 
 cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
 
-terraform_vms_tfvars_files:
-  - "{{ lookup('env', 'PWD') }}/terraform/vms/env/vars.tfvars"
-
 terraform_domain_zone_map:
   blahaj:
     sh: "26c4cee4cc505e99a566c577895cab4a"
   queercoded:
     dev: "6a3f0f8093ccbe852a7212bb81df6c03"
+
+terraform_rancher_users:
+  - name: "diademiemi"
+    username: "diademiemi"
+    enabled: true
+    password: "{{ vault_rancher_password }}"
+    role_id: admin
 
 ...
