@@ -1,0 +1,16 @@
+helm:
+  releaseName: longhorn
+  chart: longhorn
+  repo: https://charts.rancher.io/
+  version: "102.2.1+up1.4.2"
+
+  values:
+    persistence:
+      defaultClass: true
+      defaultClassReplicaCount: 1
+      defaultFsType: xfs
+      reclaimPolicy: Delete
+    defaultSettings:
+      backupTarget: null
+      backupTargetCredentialSecret: null
+      backupstorePollInterval: null
