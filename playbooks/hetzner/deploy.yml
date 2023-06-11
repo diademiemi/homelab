@@ -3,6 +3,10 @@
   tags: reset, never
   ansible.builtin.import_playbook: 00-reset.yml
 
+- name: Reset VMs
+  tags: vm-reset, never
+  ansible.builtin.import_playbook: 00-vm-reset.yml
+
 - name: Deploy servers
   tags: servers, always
   ansible.builtin.import_playbook: 01-servers.yml
