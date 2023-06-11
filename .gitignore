@@ -5,6 +5,7 @@
 # Credentials
 **/kubeconfig.yaml
 .*vault*
+**/age.key
 
 # Terraform
 **/.terraform/*
