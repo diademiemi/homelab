@@ -36,6 +36,11 @@ resource "rancher2_cluster_v2" "clusters" {
   for_each = { for cluster in var.rancher_clusters : cluster.name => cluster }
 
   name = each.value.name
+
+  labels = {
+    "identifier/name": each.value.name
+  }
+
   fleet_namespace = each.value.fleet_namespace
   
   kubernetes_version = each.value.kubernetes_version
