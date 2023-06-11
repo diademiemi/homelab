@@ -1,0 +1,10 @@
+defaultNamespace: cert-manager
+
+helm:
+  releaseName: cert-manager
+  chart: cert-manager
+  repo: https://partner-charts.rancher.io/
+  version: "v1.12.0"
+
+  values:
+    installCRDs: true
