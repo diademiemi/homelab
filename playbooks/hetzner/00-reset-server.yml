@@ -156,12 +156,14 @@
 
     - name: Remove tfstate file
       ansible.builtin.file:
-        path: "{{ playbook_dir }}/../../terraform/vms/{{ item }}"
+        path: "{{ playbook_dir }}/../../terraform/{{ item }}"
         state: absent
       run_once: true
       delegate_to: localhost
       loop:
-        - terraform.tfstate
-        - terraform.tfstate.backup
+        - vms/terraform.tfstate
+        - vms/terraform.tfstate.backup
+        - rancher/terraform.tfstate
+        - rancher/terraform.tfstate.backup
 
 ...
