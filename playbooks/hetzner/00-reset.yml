@@ -31,7 +31,6 @@
       when:
         - confirmation_2.user_input != "YES"
 
-
     - name: Query for servers
       community.hrobot.server_info:
         hetzner_user: "{{ hetzner_server_api_username }}"
