@@ -28,4 +28,4 @@ variable "dns_records" {
 #         allow_overwrite = true
 #     }        
 # ]
-# But I give this through Ansible so I can dynamically get DNS records
+# But I give this through Ansible so I can dynamically get the IPs
