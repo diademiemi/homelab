@@ -3,3 +3,4 @@ generators:
 
 resources:
   - ./longhorn/backup-schedule.yaml
+  - ./cis-scans/scan-schedule.yaml
