@@ -1,0 +1,18 @@
+---
+wireguard_ip: "192.168.150.1/24"
+wireguard_subnet: 192.168.150.0/24
+wireguard_allowed_ips: "{{ wireguard_subnet }},192.168.51.0/24"
+
+wireguard_packages:
+  - wireguard-tools
+  - iptables # Needed for network access
+  - iperf
+
+wireguard_private_key: "{{ vault_wireguard_private_key }}"
+
+wireguard_additional_peers:
+  - name: Undertale
+    public_key: "{{ vault_wireguard_undertale_public_key }}"
+    allowed_ips: "192.168.150.5/32,10.107.0.0/16,192.168.100.0/24"
+
+...

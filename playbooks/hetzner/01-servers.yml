@@ -21,6 +21,7 @@
           - qemu-kvm
           - qemu-utils
           - mkisofs
+          - dnsmasq
         state: present
 
     - name: Enable and start Libvirt daemon
@@ -47,10 +48,11 @@
       failed_when: virsh_pool_start.rc != 0 and 'is already active' not in virsh_pool_start.stderr
       changed_when: virsh_pool_start.rc == 0
 
-- name: System setup
+- name: Set up Wireguard network
   hosts: baremetal
-  tags: system
-  tasks:
+  tags: Wireguard
+  roles:
+    - { role: diademiemi.wireguard, tags: ["wireguard", "networking"]}
 
 - name: Deploy three VMs with Terraform
   hosts: localhost
@@ -128,7 +130,7 @@
       when: item.key in ansible_play_hosts and item.key != 'localhost'
       delegate_to: localhost
       run_once: true
-      no_log: true
+      # no_log: true
 
     - name: Set DNS records with Terraform
       cloud.terraform.terraform:
