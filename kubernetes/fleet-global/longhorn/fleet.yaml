@@ -14,7 +14,7 @@ helm:
       reclaimPolicy: Delete
     defaultSettings:
       backupTarget: "s3://longhorn-backups-upstream@minio/"
-      backupTargetCredentialSecret: "minio-longhorn-backups-secret"
+      backupTargetCredentialSecret: "minio-longhorn-backups"
 
 targetCustomizations:
 - name: personal
