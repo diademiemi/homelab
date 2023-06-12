@@ -5,4 +5,4 @@ metadata:
 spec:
   resourceSetName: rancher-resource-set
   retentionCount: 3
-  schedule: '0 */6 * * *'
+  schedule: '0 10 * * *'
