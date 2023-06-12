@@ -5,7 +5,7 @@
   tasks:
     - name: Prompt for confirmation
       ansible.builtin.pause:
-        prompt: "This will boot the server into rescue mode and DELETE ALL DATA. Type 'yes' in all caps to confirm."
+        prompt: "This will boot the server into rescue mode and DELETE ALL DATA. Type 'yes' in all caps to confirm"
       register: confirmation
       when: hetzner_server_number is not defined
       run_once: true
@@ -19,7 +19,7 @@
 
     - name: Prompt for confirmation
       ansible.builtin.pause:
-        prompt: "ARE YOU SURE? Type 'yes' in all caps to confirm."
+        prompt: "ARE YOU SURE? Type 'yes' in all caps to confirm"
       register: confirmation_2
       when: hetzner_server_number is not defined
       run_once: true
@@ -50,6 +50,5 @@
       loop:
         - rancher/terraform.tfstate
         - rancher/terraform.tfstate.backup
-
 
 ...
