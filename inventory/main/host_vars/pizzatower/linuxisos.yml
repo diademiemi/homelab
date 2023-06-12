@@ -4,6 +4,8 @@ media_config_root: "{{ media_root }}/config"
 media_downloads_root: "{{ media_root }}/downloads"
 media_data_root: "{{ media_root }}/media"
 
+minio_password: "{{ vault_minio_password }}"
+
 puid: "1000"
 pgid: "1000"
 timezone: "Europe/Amsterdam"
@@ -186,5 +188,19 @@ linux_isos_docker_compose_yaml:
       volumes:
         - "{{ media_config_root }}/bazarr:/config"
         - "{{ media_data_root }}:/{{ media_data_root }}"
+
+    minio:
+      image: minio/minio
+      command: server -C /etc/minio --address ":9000" --console-address ":9001" /data
+      ports:
+        - "9000:9000"
+        - "9001:9001"
+      environment:
+        MINIO_ROOT_USER: diademiemi
+        MINIO_ROOT_PASSWORD: "{{ minio_password }}"
+      volumes:
+        - /mnt/minio/data:/data
+        - /mnt/minio/config:/etc/minio/
+
 
 ...

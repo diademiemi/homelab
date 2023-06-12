@@ -1,6 +1,6 @@
 ---
 - name: Local preparation
-  hosts: local_server
+  hosts: local
   roles:
     - { role: diademiemi.openzfs, tags: ['openzfs'] }
     - { role: diademiemi.docker, tags: ['openzfs'] }

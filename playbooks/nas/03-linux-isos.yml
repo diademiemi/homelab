@@ -1,6 +1,6 @@
 ---
 - name: Deploy Docker Compose
-  hosts: local_server
+  hosts: local
   tasks:
     - name: Install Docker Python module
       become: true
