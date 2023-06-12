@@ -1,0 +1,13 @@
+apiVersion: cis.cattle.io/v1
+kind: ClusterScan
+metadata:
+  name: scheduled-scan
+spec:
+  scanProfileName: k3s-cis-1.23-profile-permissive
+  scheduledScanConfig:
+    cronSchedule: '0 */6 * * *'
+    retentionCount: 12
+    scanAlertRule:
+      alertOnFailure: true
+      alertOnComplete: false
+  scoreWarning: pass
