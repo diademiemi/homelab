@@ -3,11 +3,13 @@ collections:
   - name: diademiemi.jellyfin
   - name: cloud.terraform
     type: git
-    source: https://github.com/diademiemi/cloud.terraform.git
+    source: https://github.com/diademiemi/cloud.terraform.git  # https://github.com/ansible-collections/cloud.terraform/pull/55
   - name: kubernetes.core
   - name: community.docker
+
 roles:
   - name: diademiemi.openzfs
+  - name: diademiemi.wireguard
   - name: diademiemi.k3s
   - name: diademiemi.helm
 
