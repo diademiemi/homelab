@@ -13,6 +13,33 @@ helm:
       defaultFsType: xfs
       reclaimPolicy: Delete
     defaultSettings:
-      backupTarget: null
-      backupTargetCredentialSecret: null
-      backupstorePollInterval: null
+      backupTarget: "s3://longhorn-backups-upstream@minio/"
+      backupTargetCredentialSecret: "minio-longhorn-backups-secret"
+
+targetCustomizations:
+- name: personal
+  clusterSelector:
+    matchLabels:
+      identifier/name: personal
+  helm:
+    values:
+      defaultSettings:
+        backupTarget: "s3://longhorn-backups-personal@minio/"
+
+- name: public
+  clusterSelector:
+    matchLabels:
+      identifier/name: public
+  helm:
+    values:
+      defaultSettings:
+        backupTarget: "s3://longhorn-backups-public@minio/"
+
+- name: qc
+  clusterSelector:
+    matchLabels:
+      identifier/name: qc
+  helm:
+    values:
+      defaultSettings:
+        backupTarget: "s3://longhorn-backups-qc@minio/"
