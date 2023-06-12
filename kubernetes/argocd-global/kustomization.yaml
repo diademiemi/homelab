@@ -1,0 +1,2 @@
+generators:
+  - ./kustomize-secret-generator.yaml
