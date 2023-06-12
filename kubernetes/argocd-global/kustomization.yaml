@@ -1,2 +1,5 @@
 generators:
   - ./kustomize-secret-generator.yaml
+
+resources:
+  - ./longhorn/backup-schedule.yaml

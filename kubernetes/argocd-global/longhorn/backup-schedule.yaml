@@ -1,0 +1,12 @@
+apiVersion: longhorn.io/v1beta1
+kind: RecurringJob
+metadata:
+  name: daily-backups
+  namespace: longhorn-system
+spec:
+  cron: "30 10 * * *"
+  task: "backup"
+  groups:
+    - default
+  retain: 3
+  concurrency: 3
