@@ -4,4 +4,6 @@ k3s_role: "master"
 k3s_retrieve_kubeconfig: true
 k3s_kubeconfig_local_dest: ~/.kube/config-hetzner_server
 
+agekey: "{{ vault_agekey }}"
+
 ...
