@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/diademiemi/project_homelab_v3.git
     targetRevision: 'main'
-    path: 'kubernetes/argocd-fallback'
+    path: 'kubernetes/argocd-local'
   syncPolicy:
     automated:
       prune: true

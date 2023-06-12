@@ -1,0 +1,23 @@
+defaultNamespace: cattle-resources-system
+
+helm:
+  releaseName: rancher-backup
+  chart: rancher-backup
+  repo: https://charts.rancher.io/
+  version: "102.0.1+up3.1.1-rc9"
+
+  values:
+    s3:
+      bucketName: rancher-backups
+      credentialSecretName: minio-rancher-backups
+      credentialSecretNamespace: cattle-resources-system
+      enabled: true
+      endpoint: 192.168.100.130:9000
+      endpointCA: ''
+      folder: /rancher-backups/
+      insecureTLSSkipVerify: true
+      region: ''
+    serviceAccount:
+      annotations: {}
+    tolerations: null
+    trace: false
