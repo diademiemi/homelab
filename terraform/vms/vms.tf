@@ -1,6 +1,7 @@
 module "vm" {
   source  = "diademiemi/vm/libvirt"
-  version = "2.2.0"
+  version = "3.0.0"
+  depends_on = [ libvirt_network.local_net ]
 
   for_each = { for vm in var.vms : vm.hostname => vm }
 
@@ -20,12 +21,10 @@ module "vm" {
 
     ssh_keys = each.value.ssh_keys
 
-    dhcp = each.value.dhcp
-    ip = each.value.ip
-    gateway = each.value.gateway
+    # libvirt_external_interface = each.value.libvirt_external_interface
+    # mac = each.value.mac
 
-    libvirt_external_interface = each.value.libvirt_external_interface
-    mac = each.value.mac
+    network_interfaces = coalesce(each.value.network_interfaces, [])
 
     spice_server_enabled = coalesce(each.value.spice_server_enabled, false)
 
@@ -33,4 +32,14 @@ module "vm" {
     ansible_groups = each.value.ansible_groups
     ansible_user = each.value.ansible_user
 
+}
+
+resource "libvirt_network" "local_net" {
+    name      = "local_net"
+    mode      = "nat"
+    domain    = "blahaj.local"
+    addresses = ["192.168.51.0/24"]
+    dhcp {
+        enabled = true
+    }
 }

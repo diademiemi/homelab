@@ -16,8 +16,37 @@ vms = [
 
         dhcp = true
 
-        libvirt_external_interface = "enp34s0"
-        mac = "00:50:56:00:11:D4"
+        network_interfaces = [
+            {
+                name = "ens3"
+                macvtap = "enp34s0"
+                mac = "00:50:56:00:11:D4"
+
+                additional_routes = [
+                    {
+                        network = "0.0.0.0/0"
+                        gateway = "65.109.110.193"
+                    }
+                ]
+
+            },
+            {
+                name = "ens4"
+                network_name = "local_net"
+
+                dhcp = false
+                ip = "192.168.51.11/24"
+                gateway = "192.168.51.1"
+
+                additional_routes = [
+                    {
+                        network = "192.168.100.128/26"
+                        gateway = "192.168.51.1"
+                    }
+                ]
+
+            },
+        ]
 
         spice_server_enabled = false
 
@@ -42,10 +71,39 @@ vms = [
 
         dhcp = true
 
-        libvirt_external_interface = "enp34s0"
-        mac = "00:50:56:01:00:78"
+        network_interfaces = [
+            {
+                name = "ens3"
+                macvtap = "enp34s0"
+                mac = "00:50:56:01:00:78"
 
-        spice_server_enabled = false
+                additional_routes = [
+                    {
+                        network = "0.0.0.0/0"
+                        gateway = "65.109.110.193"
+                    }
+                ]
+
+            },
+            {
+                name = "ens4"
+                network_name = "local_net"
+
+                dhcp = false
+                ip = "192.168.51.12/24"
+                gateway = "192.168.51.1"
+
+                additional_routes = [
+                    {
+                        network = "192.168.100.128/26"
+                        gateway = "192.168.51.1"
+                    }
+                ]
+
+            },
+        ]
+
+        spice_server_enabled = true
 
         ansible_groups = ["vm", "cloud", "downstream", "personal"]
         ansible_user   = "debian"
@@ -68,8 +126,37 @@ vms = [
 
         dhcp = true
 
-        libvirt_external_interface = "enp34s0"
-        mac = "00:50:56:00:EB:41"
+        network_interfaces = [
+            {
+                name = "ens3"
+                macvtap = "enp34s0"
+                mac = "00:50:56:00:EB:41"
+
+                additional_routes = [
+                    {
+                        network = "0.0.0.0/0"
+                        gateway = "65.109.110.193"
+                    }
+                ]
+
+            },
+            {
+                name = "ens4"
+                network_name = "local_net"
+
+                dhcp = false
+                ip = "192.168.51.13/24"
+                gateway = "192.168.51.1"
+
+                additional_routes = [
+                    {
+                        network = "192.168.100.128/26"
+                        gateway = "192.168.51.1"
+                    }
+                ]
+
+            },
+        ]
 
         spice_server_enabled = false
 
@@ -94,8 +181,37 @@ vms = [
 
         dhcp = true
 
-        libvirt_external_interface = "enp34s0"
-        mac = "00:50:56:00:8F:E9"
+        network_interfaces = [
+            {
+                name = "ens3"
+                macvtap = "enp34s0"
+                mac = "00:50:56:00:8F:E9"
+
+                additional_routes = [
+                    {
+                        network = "0.0.0.0/0"
+                        gateway = "65.109.110.193"
+                    }
+                ]
+
+            },
+            {
+                name = "ens4"
+                network_name = "local_net"
+
+                dhcp = false
+                ip = "192.168.51.14/24"
+                gateway = "192.168.51.1"
+
+                additional_routes = [
+                    {
+                        network = "192.168.100.128/26"
+                        gateway = "192.168.51.1"
+                    }
+                ]
+
+            },
+        ]
 
         spice_server_enabled = false
 

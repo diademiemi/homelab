@@ -27,9 +27,29 @@ variable "vms" {
         dhcp = bool
         ip = optional(string)
         gateway = optional(string)
-        mac = optional(string)
+        # mac = optional(string)
 
-        libvirt_external_interface = optional(string)
+        # libvirt_external_interface = optional(string)
+
+        network_interfaces = optional(list(object({
+            name = string
+            network_id = optional(string)
+            network_name = optional(string)
+            macvtap = optional(string)
+            hostname = optional(string)
+            wait_for_lease = optional(bool)
+
+            dhcp = optional(bool)
+            ip = optional(string)
+            gateway = optional(string)
+            nameservers = optional(list(string))
+            mac = optional(string)
+
+            additional_routes = optional(list(object({
+            network = string
+            gateway = string
+            })))
+        })))
 
         spice_server_enabled = optional(bool)
 
