@@ -1,0 +1,23 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAllowedRepos
+metadata:
+  name: allow-ghcr-in-tonetag
+spec:
+  enforcementAction: deny
+  match:
+    excludedNamespaces: []
+    labelSelector:
+      matchExpressions: []
+    namespaceSelector:
+      matchExpressions: []
+    kinds:
+      - apiGroups:
+          - '*'
+        kinds:
+          - Pod
+    namespaces:
+      - tonetag
+    scope: Namespaced
+  parameters:
+    repos:
+      - ghcr.io/tonetag

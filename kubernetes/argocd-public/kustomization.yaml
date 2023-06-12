@@ -1,3 +1,4 @@
 resources:
   - rancher-backups/schedule.yaml
   - argocd/tonetag-app.yaml  # Deploy from https://github.com/tonetag/deployment
+  - opa/policy-tonetag.yaml
