@@ -3,8 +3,8 @@ vms = [
         hostname = "basil" # Upstream Rancher cluster
         domain = "blahaj.sh"
 
-        vcpu = 4
-        memory = 6144
+        vcpu = 6
+        memory = 16384
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
@@ -19,13 +19,13 @@ vms = [
         network_interfaces = [
             {
                 name = "ens3"
-                macvtap = "enp34s0"
-                mac = "00:50:56:00:11:D4"
+                macvtap = "eno1"
+                mac = "00:50:56:00:04:52"
 
                 additional_routes = [
                     {
                         network = "0.0.0.0/0"
-                        gateway = "65.109.110.193"
+                        gateway = "5.9.32.193"
                     }
                 ]
 
@@ -58,8 +58,8 @@ vms = [
         hostname = "aubrey" # For my private use
         domain = "blahaj.sh"
 
-        vcpu = 6
-        memory = 24576
+        vcpu = 8
+        memory = 49152
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
@@ -74,13 +74,13 @@ vms = [
         network_interfaces = [
             {
                 name = "ens3"
-                macvtap = "enp34s0"
-                mac = "00:50:56:01:00:78"
+                macvtap = "eno1"
+                mac = "00:50:56:00:07:CF"
 
                 additional_routes = [
                     {
                         network = "0.0.0.0/0"
-                        gateway = "65.109.110.193"
+                        gateway = "5.9.32.193"
                     }
                 ]
 
@@ -113,8 +113,8 @@ vms = [
         hostname = "kel" # For services I host that need to be publically accessible
         domain = "blahaj.sh"
 
-        vcpu = 4
-        memory = 12288
+        vcpu = 6
+        memory = 24576
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
@@ -129,13 +129,13 @@ vms = [
         network_interfaces = [
             {
                 name = "ens3"
-                macvtap = "enp34s0"
-                mac = "00:50:56:00:EB:41"
+                macvtap = "eno1"
+                mac = "00:50:56:00:0C:B7"
 
                 additional_routes = [
                     {
                         network = "0.0.0.0/0"
-                        gateway = "65.109.110.193"
+                        gateway = "5.9.32.193"
                     }
                 ]
 
@@ -168,8 +168,8 @@ vms = [
         hostname = "hero" # For a group of people I'm working with, https://github.com/queercoded-dev
         domain = "queercoded.dev"
 
-        vcpu = 4
-        memory = 20480
+        vcpu = 6
+        memory = 32768
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
@@ -184,13 +184,13 @@ vms = [
         network_interfaces = [
             {
                 name = "ens3"
-                macvtap = "enp34s0"
-                mac = "00:50:56:00:8F:E9"
+                macvtap = "eno1"
+                mac = "00:50:56:00:11:07"
 
                 additional_routes = [
                     {
                         network = "0.0.0.0/0"
-                        gateway = "65.109.110.193"
+                        gateway = "5.9.32.193"
                     }
                 ]
 
