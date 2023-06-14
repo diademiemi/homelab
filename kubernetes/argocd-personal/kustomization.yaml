@@ -1,2 +1,4 @@
 resources:
   - rancher-backups/schedule.yaml
+  - cert-manager/
+  - ingresses/
