@@ -7,7 +7,7 @@ metadata:
 spec:
   ports:
   - name: http
-    port: 80
+    port: 8096
     protocol: TCP
   clusterIP: None
   type: ClusterIP
@@ -20,10 +20,10 @@ metadata:
   namespace: ingresses
 subsets:
 - addresses:
-  - ip: 192.168.100.131
+  - ip: 192.168.100.130
   ports:
   - name: http
-    port: 80
+    port: 8096
     protocol: TCP
 ...
 ---
