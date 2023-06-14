@@ -1,0 +1,5 @@
+generators:
+  - ./secret-generator.yaml
+
+resources:
+  - blahaj-issuer.yaml
