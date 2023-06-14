@@ -130,7 +130,7 @@
       when: item.key in ansible_play_hosts and item.key != 'localhost'
       delegate_to: localhost
       run_once: true
-      # no_log: true
+      no_log: true
 
     - name: Set DNS records with Terraform
       cloud.terraform.terraform:
