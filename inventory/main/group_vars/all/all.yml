@@ -9,4 +9,6 @@ kubeconfig_path: "/etc/rancher/k3s/k3s.yaml"
 
 rancher_bootstrap_password: "{{ vault_rancher_bootstrap_password }}"
 
+hetzner_server_number: "{{ vault_hetzner_server_number }}"
+
 ...

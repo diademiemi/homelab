@@ -1,4 +1,5 @@
 ---
 hetzner_server_api_username: "{{ vault_hetzner_server_api_username }}"
 hetzner_server_api_password: "{{ vault_hetzner_server_api_password }}"
+
 ...
