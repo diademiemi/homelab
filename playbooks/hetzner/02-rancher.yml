@@ -1,5 +1,5 @@
 ---
-- name: Install Ansible pip dependencies
+- name: Install dependencies
   hosts: cloud
   tags: dependencies
   tasks:
@@ -17,10 +17,6 @@
           - pyyaml
         state: present
 
-- name: Install Longhorn dependencies
-  hosts: downstream
-  tags: dependencies
-  tasks:
     - name: Install Longhorn dependencies
       become: true
       ansible.builtin.package:
@@ -35,7 +31,6 @@
         name: iscsid
         enabled: true
         state: started
-
 
 - name: Set up a K3S cluster for Rancher
   hosts: rancher
