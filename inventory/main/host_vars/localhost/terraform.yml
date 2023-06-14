@@ -4,6 +4,15 @@ libvirt_connection_uri: "qemu+ssh://root@{{ vault_libvirt_ip }}/system?no_verify
 
 cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
 
+dns_records:
+  - name: "*"
+    zone_id: "{{ terraform_domain_zone_map['blahaj']['sh'] }}"
+    type: "CNAME"
+    ttl: 1
+    value: "aubrey.blahaj.sh"
+    proxied: false
+    allow_overwrite: true
+
 terraform_domain_zone_map:
   blahaj:
     sh: "26c4cee4cc505e99a566c577895cab4a"
