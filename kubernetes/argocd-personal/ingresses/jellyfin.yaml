@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin-ip
+  namespace: ingresses
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+  clusterIP: None
+  type: ClusterIP
+...
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: jellyfin-ip
+  namespace: ingresses
+subsets:
+- addresses:
+  - ip: 192.168.100.131
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+...
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-service
+  namespace: ingresses
+spec:
+  rules:
+  - host: media.blahaj.sh
+    http:
+      paths:
+      - backend:
+          service:
+            name: jellyfin-ip
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - media.blahaj.sh
+    secretName: media-blahaj-cert
+...
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: media-blahaj-cert
+  namespace: ingresses
+spec:
+  secretName: media-blahaj-cert
+  commonName: media.blahaj.sh
+  dnsNames:
+    - media.blahaj.sh
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

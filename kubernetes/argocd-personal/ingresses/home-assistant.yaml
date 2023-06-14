@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homeassistant-ip
+  namespace: ingresses
+spec:
+  ports:
+  - name: http
+    port: 8123 
+    protocol: TCP
+  clusterIP: None
+  type: ClusterIP
+...
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: homeassistant-ip
+  namespace: ingresses
+subsets:
+- addresses:
+  - ip: 10.107.0.2
+  ports:
+  - name: http
+    port: 8123
+    protocol: TCP
+...
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homeassistant-service
+  namespace: ingresses
+spec:
+  rules:
+  - host: home.blahaj.sh
+    http:
+      paths:
+      - backend:
+          service:
+            name: homeassistant-ip
+            port:
+              number: 8123 
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - home.blahaj.sh
+    secretName: home-blahaj-cert
+...
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: home-blahaj-cert
+spec:
+  secretName: home-blahaj-cert
+  commonName: home.blahaj.sh
+  dnsNames:
+    - home.blahaj.sh
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

@@ -1,0 +1,4 @@
+resources:
+  - home-assistant.yaml
+  - jellyfin.yaml
+  - namespace.yaml
