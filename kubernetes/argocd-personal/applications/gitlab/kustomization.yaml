@@ -4,7 +4,7 @@ helmCharts:
   - name: gitlab
     releaseName: gitlab
     namespace: gitlab
-    repo: https://charts.gitlab.io/
+    repo: https://charts.gitlab.io
     version: "7.0.4"
     valuesInline:
       global:
