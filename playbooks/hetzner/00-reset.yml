@@ -125,7 +125,7 @@
             -t yes \
             -s en \
             -r yes \
-            -l 0
+            -l 1
           changed_when: true # Always true, this reinstalls the system..
 
         - name: Reboot the server
