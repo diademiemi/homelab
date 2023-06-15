@@ -2,3 +2,11 @@ resources:
   - rancher-backups/schedule.yaml
   - cert-manager/
   - ingresses/
+
+helmCharts:
+  - name: joplin-server
+    releaseName: joplin-server
+    namespace: joplin-server
+    repo: https://diademiemi.github.io/charts
+    version: "0.2.3"
+    valuesFile: helmValues/joplin-server.yaml

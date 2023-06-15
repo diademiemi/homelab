@@ -3,3 +3,4 @@ generators:
 
 resources:
   - blahaj-issuer.yaml
+  - ./certificates

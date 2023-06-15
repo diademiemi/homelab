@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: home-blahaj-cert
+  namespace: ingresses
+spec:
+  secretName: home-blahaj-cert
+  commonName: home.blahaj.sh
+  dnsNames:
+    - home.blahaj.sh
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

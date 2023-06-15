@@ -49,19 +49,3 @@ spec:
     - media.blahaj.sh
     secretName: media-blahaj-cert
 ...
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: media-blahaj-cert
-  namespace: ingresses
-spec:
-  secretName: media-blahaj-cert
-  commonName: media.blahaj.sh
-  dnsNames:
-    - media.blahaj.sh
-  issuerRef:
-    name: blahaj-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io
-...
