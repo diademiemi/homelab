@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-blahaj-cert
+  namespace: ingresses
+spec:
+  secretName: vault-blahaj-cert
+  commonName: vault.blahaj.sh
+  dnsNames:
+    - vault.blahaj.sh
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

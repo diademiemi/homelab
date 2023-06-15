@@ -1,0 +1,41 @@
+namespace: vaultwarden
+
+helmCharts:
+  - name: vaultwarden
+    releaseName: vaultwarden
+    namespace: vaultwarden
+    repo: https://diademiemi.github.io/charts
+    version: "0.2.0"
+    valuesInline:
+      image:
+        repository: vaultwarden/server
+        pullPolicy: IfNotPresent
+
+      env:
+        SIGNUPS_ALLOWED: false
+        INVITATIONS_ALLOWED: true
+        DOMAIN: https://vault.blahaj.sh
+        SMTP_HOST: blahaj.sh
+        SMTP_FROM: no-reply@blahaj.sh
+        WEB_VAULT_ENABLED: true
+        ADMIN_TOKEN: "INITIAL_TOKEN_CHANGE_IN_UI"
+
+      ingress:
+        enabled: true
+        hosts:
+          - host: vault.blahaj.sh
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+        - secretName: vault-blahaj-cert
+          hosts:
+            - vault.blahaj.sh
+
+      persistence:
+        enabled: true
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 32000Mi
+        mountPath: /data
+        extraVolumes: []
