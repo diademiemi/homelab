@@ -15,6 +15,7 @@ helm:
     defaultSettings:
       backupTarget: "s3://longhorn-backups-upstream@minio/"
       backupTargetCredentialSecret: "minio-longhorn-backups"
+      allowRecurringJobWhileVolumeDetached: true
 
 targetCustomizations:
 - name: personal
