@@ -41,7 +41,7 @@ spec:
           service:
             name: jellyfin-ip
             port:
-              number: 80
+              number: 8096
         path: /
         pathType: Prefix
   tls:
