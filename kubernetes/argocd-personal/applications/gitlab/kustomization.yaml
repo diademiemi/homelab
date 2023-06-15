@@ -12,7 +12,12 @@ helmCharts:
         edition: ce
         hosts:
           domain: blahaj.sh
+        hpa:
+          apiVersion: v2
+        pdb:
+          apiVersion: v1
         ingress:
+          apiVersion: v1
           enabled: true
           tls:
             secretName: gitlab-blahaj-cert
@@ -23,30 +28,6 @@ helmCharts:
 
       certmanager:
         install: false
-
-      nginx-ingress:
-        enabled: false
-
-      gitlab:
-        gitaly:
-          persistence:
-            storageClass: longhorn
-
-      postgresql:
-        # # The chart is not up to date, the documentation is wrong :)
-        # https://github.com/bitnami/charts/blob/09ba1564fed3df4f1d94518edcb58aab1f75c827/bitnami/postgresql/templates/statefulset.yaml
-        master:
-          persistence:
-            storageClass: longhorn
-
-      minio:
-        persistence:
-          storageClass: longhorn
-
-      redis:
-        master:
-          persistence:
-            storageClass: longhorn
 
       prometheus:
         install: false
