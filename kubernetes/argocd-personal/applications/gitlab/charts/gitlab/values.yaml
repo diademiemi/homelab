@@ -1,0 +1,24 @@
+global:
+  https: true
+  edition: ce
+  hosts:
+    domain: blahaj.sh
+  hpa:
+    apiVersion: v2
+  pdb:
+    apiVersion: v1
+  ingress:
+    apiVersion: v1
+    enabled: true
+    tls:
+      secretName: gitlab-blahaj-cert
+    configureCertmanager: false
+
+upgradeCheck:
+  enabled: true
+
+certmanager:
+  install: false
+
+prometheus:
+  install: false

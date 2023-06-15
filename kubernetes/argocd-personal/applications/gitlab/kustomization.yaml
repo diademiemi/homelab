@@ -6,28 +6,4 @@ helmCharts:
     namespace: gitlab
     repo: https://charts.gitlab.io/
     version: "7.0.4"
-    valuesInline:
-      global:
-        https: true
-        edition: ce
-        hosts:
-          domain: blahaj.sh
-        hpa:
-          apiVersion: v2
-        pdb:
-          apiVersion: v1
-        ingress:
-          apiVersion: v1
-          enabled: true
-          tls:
-            secretName: gitlab-blahaj-cert
-          configureCertmanager: false
-
-      upgradeCheck:
-        enabled: true
-
-      certmanager:
-        install: false
-
-      prometheus:
-        install: false
+    valuesFile: ./charts/gitlab/values.yaml
