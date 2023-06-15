@@ -1,0 +1,17 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gitlab-blahaj-cert
+  namespace: gitlab
+spec:
+  secretName: gitlab-blahaj-cert
+  commonName: gitlab.blahaj.sh
+  dnsNames:
+    - gitlab.blahaj.sh
+    - "*.blahaj.sh"
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

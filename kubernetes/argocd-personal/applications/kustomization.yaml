@@ -1,3 +1,4 @@
 resources:
   - ./joplin-server
   - ./vaultwarden
+  - ./gitlab

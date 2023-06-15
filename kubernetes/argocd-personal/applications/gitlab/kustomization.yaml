@@ -1,0 +1,52 @@
+namespace: gitlab
+
+helmCharts:
+  - name: gitlab
+    releaseName: gitlab
+    namespace: gitlab
+    repo: https://charts.gitlab.io/
+    version: "v16.0.4"
+    valuesInline:
+      global:
+        https: true
+        edition: ce
+        hosts:
+          domain: blahaj.sh
+        ingress:
+          enabled: true
+          tls:
+            secretName: gitlab-blahaj-cert
+          configureCertmanager: false
+
+      upgradeCheck:
+        enabled: true
+
+      certmanager:
+        install: false
+
+      nginx-ingress:
+        enabled: false
+
+      gitlab:
+        gitaly:
+          persistence:
+            storageClass: longhorn
+
+      postgresql:
+        # # The chart is not up to date, the documentation is wrong :)
+        # https://github.com/bitnami/charts/blob/09ba1564fed3df4f1d94518edcb58aab1f75c827/bitnami/postgresql/templates/statefulset.yaml
+        master:
+          persistence:
+            storageClass: longhorn
+
+      minio:
+        persistence:
+          storageClass: longhorn
+
+      redis:
+        master:
+          persistence:
+            storageClass: longhorn
+
+      prometheus:
+        install: false

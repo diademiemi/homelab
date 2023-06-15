@@ -3,3 +3,4 @@ resources:
   - ./media.yaml
   - ./notes.yaml
   - ./vault.yaml
+  - ./gitlab.yaml
