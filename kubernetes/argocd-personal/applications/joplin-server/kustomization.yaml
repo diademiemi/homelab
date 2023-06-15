@@ -1,0 +1,42 @@
+namespace: joplin-server
+
+helmCharts:
+  - name: joplin-server
+    releaseName: joplin-server
+    namespace: joplin-server
+    repo: https://diademiemi.github.io/charts
+    version: "0.2.3"
+    valuesInline:
+      ingress:
+        enabled: true
+        hosts:
+          - host: notes.blahaj.sh
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: notes-blahaj-cert
+            hosts:
+              - notes.blahaj.sh
+
+      env:
+        APP_BASE_URL: https://notes.blahaj.sh:443
+        APP_PORT: 8080
+        DB_CLIENT: pg
+        POSTGRES_PASSWORD: joplin-internal
+        POSTGRES_USER: joplin-internal
+        POSTGRES_DATABASE: joplin-internal
+        POSTGRES_HOST: joplin-server-postgres
+        POSTGRES_PORT: 5432
+
+      postgres:
+        env:
+          POSTGRES_PASSWORD: joplin-internal
+          POSTGRES_USER: joplin-internal
+          POSTGRES_DB: joplin-internal
+        persistence:
+          enabled: true
+          accessMode: ReadWriteOnce
+          size: 6400Mi
+          storageClass: longhorn
+          mountPath: /var/lib/postgresql/data
