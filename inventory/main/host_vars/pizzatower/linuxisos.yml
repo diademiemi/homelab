@@ -191,6 +191,8 @@ linux_isos_docker_compose_yaml:
 
     minio:
       image: minio/minio
+      container_name: minio
+      restart: unless-stopped
       command: server -C /etc/minio --address ":9000" --console-address ":9001" /data
       ports:
         - "9000:9000"
