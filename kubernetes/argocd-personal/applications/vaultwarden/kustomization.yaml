@@ -34,7 +34,6 @@ helmCharts:
 
       persistence:
         enabled: true
-        storageClass: "longhorn"
         accessMode: ReadWriteOnce
         size: 32000Mi
         mountPath: /data

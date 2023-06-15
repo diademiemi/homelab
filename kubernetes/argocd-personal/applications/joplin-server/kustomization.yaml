@@ -38,5 +38,4 @@ helmCharts:
           enabled: true
           accessMode: ReadWriteOnce
           size: 6400Mi
-          storageClass: longhorn
           mountPath: /var/lib/postgresql/data
