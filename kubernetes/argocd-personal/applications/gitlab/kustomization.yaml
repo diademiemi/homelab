@@ -13,11 +13,11 @@ helmCharts:
         hosts:
           domain: blahaj.sh
         hpa:
-          apiVersion: v2
+          apiVersion: "autoscaling/v2"
         pdb:
-          apiVersion: v1
+          apiVersion: "policy/v1"
         ingress:
-          apiVersion: v1
+          apiVersion: "networking.k8s.io/v1"
           enabled: true
           tls:
             secretName: gitlab-blahaj-cert
