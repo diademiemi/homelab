@@ -1,5 +1,5 @@
 ---
-rancher_downstream_cluster_name: "personal"
+rancher_cluster_name: "personal"
 
 agekey: "{{ vault_agekey }}"
 

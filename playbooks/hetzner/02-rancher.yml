@@ -147,7 +147,7 @@
       become: true
       ansible.builtin.shell: |
         set -o pipefail
-        {{ hostvars['localhost']['rancher_terraform']['outputs']['rancher_cluster_node_commands']['value'][rancher_downstream_cluster_name] }} \
+        {{ hostvars['localhost']['rancher_terraform']['outputs']['rancher_cluster_node_commands']['value'][rancher_cluster_name] }} \
         {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
       args:
         creates: /etc/rancher/k3s
