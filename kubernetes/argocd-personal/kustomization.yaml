@@ -1,7 +1,8 @@
 resources:
-  - rancher-backups/schedule.yaml
-  - cert-manager/
-  - ingresses/
+  - ./rancher-backups/schedule.yaml
+  - ./cert-manager/
+  - ./ingresses/
+  - ./namespaces/
 
 helmCharts:
   - name: joplin-server
@@ -9,4 +10,4 @@ helmCharts:
     namespace: joplin-server
     repo: https://diademiemi.github.io/charts
     version: "0.2.3"
-    valuesFile: helmValues/joplin-server.yaml
+    valuesFile: ./helmValues/joplin-server.yaml
