@@ -1,4 +1,8 @@
 ---
+- name: Create backups before reset
+  tags: reset, vm-reset, backup, create-backup, never
+  ansible.builtin.import_playbook: 00-backups.yml
+
 - name: Reset server
   tags: reset, never
   ansible.builtin.import_playbook: 00-reset.yml

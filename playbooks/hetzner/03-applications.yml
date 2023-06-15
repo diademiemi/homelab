@@ -85,4 +85,183 @@
       loop:
         - fleet-default  # Deploy to downstream clusters
         - fleet-local  # Deploy to upstream cluster
+
+- name: Restore volume backups
+  hosts: vm
+  tags: reset, vm-reset, backup, restore-backup, always
+  tasks:
+    - name: Wait for all pods in longhorn-system to be running
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        kind: Pod
+        namespace: longhorn-system
+      register: longhorn_pods
+      retries: 60
+      delay: 15
+      until: |
+        longhorn_pods.resources is defined and
+        longhorn_pods.resources | length > 0 and
+        longhorn_pods.resources | map(attribute='status.phase') | list | difference(['Running']) | length == 0
+
+    - name: Check if Longhorn backup names are stored
+      ansible.builtin.stat:
+        path: "/tmp/longhorn_volumes_map_{{ inventory_hostname }}.json"
+      register: longhorn_volumes_map_file
+      delegate_to: localhost
+
+    - name: Read from file per host
+      ansible.builtin.slurp:
+        src: "/tmp/longhorn_volumes_map_{{ inventory_hostname }}.json"
+      register: longhorn_volumes_map_file_content
+      delegate_to: localhost
+      when: longhorn_volumes_map_file.stat.exists
+
+    - name: Set list of longhorn backups
+      ansible.builtin.set_fact:
+        longhorn_volumes_map: "{{ longhorn_volumes_map_file_content['content'] | b64decode | from_json }}"
+      when: longhorn_volumes_map_file.stat.exists
+
+    - name: Set empty fact if file does not exist per host
+      ansible.builtin.set_fact:
+        longhorn_volumes_map: []
+      when: not longhorn_volumes_map_file.stat.exists
+
+    - name: Get Longhorn volumes
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        kind: Volume
+        api_version: longhorn.io/v1beta2
+        namespace: longhorn-system
+      register: longhorn_volumes
+
+    - name: Restore volumes
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: longhorn.io/v1beta2
+          kind: Volume
+          metadata:
+            labels:
+              longhornvolume: vol-01
+            name: "{{ item.volumeName }}"
+            namespace: longhorn-system
+          spec:
+            fromBackup: "s3://longhorn-backups-{{ rancher_cluster_name }}@minio?volume={{ item.volumeName }}&backup=pre-reset-{{ item.volumeName }}"
+            numberOfReplicas: 1
+            frontend: blockdev
+      loop: "{{ longhorn_volumes_map }}"
+      when: longhorn_volumes_map is defined and
+        item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+      register: restore_vols
+      retries: 60
+      delay: 5
+      until: restore_vols is not failed
+
+    - name: Wait for volume to have status.restoreRequired false
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: longhorn.io/v1beta2
+        kind: Volume
+        name: "{{ item.volumeName }}"
+        namespace: longhorn-system
+      register: longhorn_volume
+      retries: 60
+      delay: 5
+      until: |
+        longhorn_volume.resources is defined and
+        longhorn_volume.resources | length > 0 and
+        longhorn_volume.resources[0].status is defined and
+        longhorn_volume.resources[0].status.restoreRequired is defined and
+        longhorn_volume.resources[0].status.restoreRequired == false
+      loop: "{{ longhorn_volumes_map }}"
+      when: longhorn_volumes_map is defined and
+        item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+
+    - name: Get a running longhorn-ui pod
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        kind: "Pod"
+        namespace: "longhorn-system"
+        label_selectors:
+          - "app=longhorn-ui"
+        field_selectors:
+          - "status.phase=Running"
+      register: longhorn_ui_pod
+      retries: 360
+      delay: 5
+      until: |
+        longhorn_ui_pod.resources is defined and
+        longhorn_ui_pod.resources | length > 0 and
+        longhorn_ui_pod.resources[0].metadata is defined and
+        longhorn_ui_pod.resources[0].metadata.name is defined
+      when:
+        - restore_vols is defined
+        - not restore_vols is skipped
+
+    - name: Call Longhorn to create PV
+      become: true
+      kubernetes.core.k8s_exec:
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: longhorn-system
+        pod: "{{ longhorn_ui_pod.resources[0].metadata.name }}"
+        container: longhorn-ui
+        command: >-
+          curl -X POST -d '{"pvName":"{{ item.pvName }}","fsType":"xfs"}'
+          "http://longhorn-frontend.longhorn-system.svc.cluster.local/v1/volumes/{{ item.volumeName }}?action=pvCreate"
+      loop: "{{ longhorn_volumes_map }}"
+      when: longhorn_volumes_map is defined and
+        item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+
+    - name: Call Longhorn to create PVC
+      become: true
+      kubernetes.core.k8s_exec:
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: longhorn-system
+        pod: "{{ longhorn_ui_pod.resources[0].metadata.name }}"
+        container: longhorn-ui
+        command: >-
+          curl -X POST -d '{"namespace":"{{ item.namespace }}","pvcName":"{{ item.pvcName }}"}'
+          "http://longhorn-frontend.longhorn-system.svc.cluster.local/v1/volumes/{{ item.volumeName }}?action=pvcCreate"
+      loop: "{{ longhorn_volumes_map }}"
+      when: longhorn_volumes_map is defined and
+        item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+
+- name: Deploy Fleet projects to deploy ArgoCD applications
+  hosts: upstream
+  tags: upstream, rancher, argocd, fleet
+  tasks:
+    - name: Add Fleet project
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: "{{ item }}"
+        definition:
+          apiVersion: fleet.cattle.io/v1alpha1
+          kind: GitRepo
+          metadata:
+            name: argocd-projects
+          spec:
+            branch: main
+            insecureSkipTLSVerify: false
+            paths:
+              - /kubernetes/fleet-argocd-projects
+            repo: https://github.com/diademiemi/project_homelab_v3.git
+            targets:
+              - clusterSelector:
+                  matchExpressions:
+                    - key: provider.cattle.io
+                      operator: NotIn
+                      values:
+                        - harvester
+      loop:
+        - fleet-default  # Deploy to downstream clusters
+        - fleet-local  # Deploy to upstream cluster
+
 ...
