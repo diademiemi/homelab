@@ -99,6 +99,11 @@
     - name: Clear facts
       ansible.builtin.meta: clear_facts
 
+    - name: Wait for host to come back
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 600
+
 - name: If we are running on a Hetzner rescue system, install Debian
   hosts: baremetal
   gather_facts: true
