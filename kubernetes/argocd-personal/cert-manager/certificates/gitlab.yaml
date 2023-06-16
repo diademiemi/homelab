@@ -6,7 +6,7 @@ metadata:
   namespace: gitlab
 spec:
   secretName: gitlab-blahaj-cert
-  commonName: gitlab.blahaj.sh
+  commonName: "*.blahaj.sh"
   dnsNames:
     - "*.blahaj.sh"
   issuerRef:

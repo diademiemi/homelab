@@ -8,6 +8,7 @@ spec:
   secretName: home-blahaj-cert
   commonName: home.blahaj.sh
   dnsNames:
+    - blahaj.sh  # To work around https://letsencrypt.org/docs/duplicate-certificate-limit/
     - home.blahaj.sh
   issuerRef:
     name: blahaj-issuer

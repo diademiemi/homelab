@@ -8,6 +8,7 @@ spec:
   secretName: vault-blahaj-cert
   commonName: vault.blahaj.sh
   dnsNames:
+    - blahaj.sh  # To work around https://letsencrypt.org/docs/duplicate-certificate-limit/
     - vault.blahaj.sh
   issuerRef:
     name: blahaj-issuer
