@@ -177,7 +177,7 @@
         longhorn_volume.resources | length > 0 and
         longhorn_volume.resources[0].status is defined and
         longhorn_volume.resources[0].status.restoreRequired is defined and
-        longhorn_volume.resources[0].status.restoreRequired == false
+        not longhorn_volume.resources[0].status.restoreRequired
       loop: "{{ longhorn_volumes_map }}"
       when: longhorn_volumes_map is defined and
         item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
