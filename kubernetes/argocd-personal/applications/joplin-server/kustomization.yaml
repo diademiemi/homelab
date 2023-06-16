@@ -36,6 +36,7 @@ helmCharts:
           POSTGRES_DB: joplin-internal
         persistence:
           enabled: true
+          storageClass: longhorn
           accessMode: ReadWriteOnce
           size: 6400Mi
           mountPath: /var/lib/postgresql/data
