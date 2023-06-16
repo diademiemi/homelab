@@ -3,7 +3,7 @@ vms = [
         hostname = "basil" # Upstream Rancher cluster
         domain = "blahaj.sh"
 
-        vcpu = 6
+        vcpu = 4
         memory = 16384
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
@@ -58,7 +58,7 @@ vms = [
         hostname = "aubrey" # For my private use
         domain = "blahaj.sh"
 
-        vcpu = 8
+        vcpu = 12
         memory = 49152
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
