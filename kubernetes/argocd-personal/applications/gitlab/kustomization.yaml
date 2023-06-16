@@ -23,8 +23,14 @@ helmCharts:
             secretName: gitlab-blahaj-cert
           configureCertmanager: false
 
+      nginx-ingress:
+        controller:
+          extraArgs:
+            workaround: issue 2487
+        enabled: false
+
       upgradeCheck:
-        enabled: true
+        enabled: false
 
       certmanager:
         install: false
