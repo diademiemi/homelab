@@ -8,7 +8,6 @@ spec:
   secretName: gitlab-blahaj-cert
   commonName: gitlab.blahaj.sh
   dnsNames:
-    - gitlab.blahaj.sh
     - "*.blahaj.sh"
   issuerRef:
     name: blahaj-issuer
