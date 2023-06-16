@@ -160,6 +160,8 @@
       retries: 60
       delay: 5
       until: restore_vols is not failed
+      loop_control:
+        pause: 5
 
     - name: Wait for volume to have status.restoreRequired false
       become: true
@@ -217,6 +219,24 @@
       loop: "{{ longhorn_volumes_map }}"
       when: longhorn_volumes_map is defined and
         item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+      loop_control:
+        pause: 1
+
+    - name: Create namespaces for PVCs
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ item.namespace }}"
+      loop: "{{ longhorn_volumes_map }}"
+      when: longhorn_volumes_map is defined and
+        item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+      loop_control:
+        pause: 1
 
     - name: Call Longhorn to create PVC
       become: true
@@ -231,6 +251,8 @@
       loop: "{{ longhorn_volumes_map }}"
       when: longhorn_volumes_map is defined and
         item.volumeName not in longhorn_volumes.resources | map(attribute='metadata.name') | list
+      loop_control:
+        pause: 1
 
 - name: Deploy Fleet projects to deploy ArgoCD applications
   hosts: upstream
