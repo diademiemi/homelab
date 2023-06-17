@@ -39,6 +39,7 @@ resource "libvirt_network" "local_net" {
     mode      = "nat"
     domain    = "blahaj.local"
     addresses = ["192.168.51.0/24"]
+    autostart = true
     dhcp {
         enabled = true
     }
