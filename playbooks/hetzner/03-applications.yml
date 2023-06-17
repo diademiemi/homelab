@@ -106,13 +106,13 @@
 
     - name: Check if Longhorn backup names are stored
       ansible.builtin.stat:
-        path: "/tmp/longhorn_volumes_map_{{ inventory_hostname }}.json"
+        path: "/{{ longhorn_volume_map_local_dir }}/longhorn_volumes_map_{{ inventory_hostname }}.json"
       register: longhorn_volumes_map_file
       delegate_to: localhost
 
     - name: Read from file per host
       ansible.builtin.slurp:
-        src: "/tmp/longhorn_volumes_map_{{ inventory_hostname }}.json"
+        src: "/{{ longhorn_volume_map_local_dir }}/longhorn_volumes_map_{{ inventory_hostname }}.json"
       register: longhorn_volumes_map_file_content
       delegate_to: localhost
       when: longhorn_volumes_map_file.stat.exists
