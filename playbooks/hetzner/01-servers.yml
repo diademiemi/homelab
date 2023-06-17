@@ -87,11 +87,6 @@
   gather_facts: true
   tasks:
 
-# - name: Remove untargeted hosts from hostvars
-#   ansible.builtin.set_fact:
-#     play_hostvars: "{{ play_hostvars | default({}) | combine({item.key: item.value}) }}"
-#   when: item.key in ansible_play_hosts
-#   loop: "{{ hostvars | dict2items }}"
     - name: Set hostname
       become: true
       ansible.builtin.hostname:
@@ -143,7 +138,7 @@
       delegate_to: localhost
       run_once: true
 
-- name: Install packages on all hosts
+- name: VM configuration
   hosts: cloud
   tags: packages
   pre_tasks:
@@ -176,5 +171,21 @@
           - net-tools
           - dnsutils
         state: present
+
+    - name: Set inotify user watches limit with sysctl
+      become: true
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_watches
+        value: 4962130
+        state: present
+        reload: true
+
+    - name: Set user instances limit with sysctl
+      become: true
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_instances
+        value: 4962130
+        state: present
+        reload: true
 
 ...
