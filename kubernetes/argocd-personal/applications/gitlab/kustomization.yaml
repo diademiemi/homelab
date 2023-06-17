@@ -38,3 +38,8 @@ helmCharts:
 
       prometheus:
         install: false
+
+      gitlab-runner:
+        runners:
+          privileged: true  # For containers in containers
+        checkInterval: 15
