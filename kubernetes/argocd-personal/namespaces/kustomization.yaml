@@ -2,3 +2,4 @@ resources:
   - ./joplin-server.yaml
   - ./vaultwarden.yaml
   - ./gitlab.yaml
+  - ./site-blahaj-sh.yaml

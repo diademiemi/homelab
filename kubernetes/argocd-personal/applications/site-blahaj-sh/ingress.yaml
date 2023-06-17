@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: site-blahaj-sh
+  namespace: site-blahaj-sh
+spec:
+  rules:
+    - host: blahaj.sh
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: site-blahaj-sh
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - blahaj.sh
+      secretName: blahaj-sh-tls

@@ -1,0 +1,6 @@
+namespace: site-blahaj-sh
+
+resources:
+  - ./deployment.yaml
+  - ./service.yaml
+  - ./ingress.yaml

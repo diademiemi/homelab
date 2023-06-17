@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: site-blahaj-sh
+  namespace: site-blahaj-sh
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: site-blahaj-sh
+  template:
+    metadata:
+      labels:
+        app: site-blahaj-sh
+    spec:
+      containers:
+        - name: site-blahaj-sh
+          image: ghcr.io/diademiemi/blahaj.sh:latest
+          imagePullPolicy: "Always"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
