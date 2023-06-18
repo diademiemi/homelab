@@ -1,26 +1,38 @@
 ---
 - name: Create backups before reset
   tags: reset, vm-reset, backup, create-backup, never
-  ansible.builtin.import_playbook: 00-backups.yml
+  ansible.builtin.import_playbook: backups/create.yml
 
 - name: Reset server
   tags: reset, never
-  ansible.builtin.import_playbook: 00-reset.yml
+  ansible.builtin.import_playbook: reset/hard-reset.yml
 
 - name: Reset VMs
   tags: vm-reset, never
-  ansible.builtin.import_playbook: 00-vm-reset.yml
+  ansible.builtin.import_playbook: reset/vm-reset.yml
 
 - name: Deploy servers
   tags: servers, always
   ansible.builtin.import_playbook: 01-servers.yml
 
-- name: Deploy Rancher
-  tags: rancher, always
-  ansible.builtin.import_playbook: 02-rancher.yml
+- name: Deploy Rancher upstream
+  tags: rancher, upstream, always
+  ansible.builtin.import_playbook: 02-rancher-upstream.yml
+
+- name: Deploy Rancher upstream
+  tags: rancher, downstream, always
+  ansible.builtin.import_playbook: 03-rancher-downstream.yml
+
+- name: Deploy global Rancher configuration
+  tags: rancher, rancher-config, always
+  ansible.builtin.import_playbook: 04-rancher-config.yml
+
+- name: Create backups before reset
+  tags: reset, vm-reset, backup, restore-backup, always
+  ansible.builtin.import_playbook: backups/create.yml
 
 - name: Deploy applications
   tags: applications, always
-  ansible.builtin.import_playbook: 03-applications.yml
+  ansible.builtin.import_playbook: 05-applications.yml
 
 ...

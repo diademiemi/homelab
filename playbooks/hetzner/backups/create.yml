@@ -15,6 +15,7 @@
       ansible.builtin.set_fact:
         longhorn_volumes_map: "{{ longhorn_volumes_map | default([]) +
           [{'volumeName': item.metadata.name,
+          'backupName': '{{ ansible_date_time.iso8601 }}-{{ item.metadata.name }}',
           'pvName': item.status.kubernetesStatus.pvName,
           'pvcName': item.status.kubernetesStatus.pvcName,
           'namespace': item.status.kubernetesStatus.namespace}] }}"
@@ -37,13 +38,13 @@
           apiVersion: longhorn.io/v1beta2
           kind: Snapshot
           metadata:
-            name: "pre-reset-{{ item.metadata.name }}"
+            name: "{{ item.backupName }}"
             namespace: longhorn-system
           spec:
             createSnapshot: true
             labels: null
-            volume: "{{ item.metadata.name }}"
-      loop: "{{ longhorn_volumes.resources }}"
+            volume: "{{ item.volumeName }}"
+      loop: "{{ longhorn_volumes_map }}"
       when: longhorn_volumes_map is defined
 
     - name: Create backup for every snapshot
@@ -56,13 +57,13 @@
           kind: Backup
           metadata:
             labels:
-              backup-volume: "{{ item.metadata.name }}"
-            name: "pre-reset-{{ item.metadata.name }}"
+              backup-volume: "{{ item.volumeName }}"
+            name: "{{ item.backupName }}"
             namespace: longhorn-system
           spec:
-            snapshotName: "pre-reset-{{ item.metadata.name }}"
+            snapshotName: "{{ item.backupName }}"
             syncRequestedAt: '0000-01-01T00:00:00Z'
-      loop: "{{ longhorn_volumes.resources }}"
+      loop: "{{ longhorn_volumes_map }}"
       when: longhorn_volumes_map is defined
 
     - name: Wait for backup to have status.state completed
@@ -72,8 +73,8 @@
         kind: Backup
         api_version: longhorn.io/v1beta2
         namespace: longhorn-system
-        name: "pre-reset-{{ item.metadata.name }}"
-      loop: "{{ longhorn_volumes.resources }}"
+        name: "{{ item.backupName }}"
+      loop: "{{ longhorn_volumes_map }}"
       register: longhorn_backup
       until: longhorn_backup.resources[0].status.state == 'Completed'
       retries: 180

@@ -1,0 +1,34 @@
+---
+- name: Deploy Fleet projects to deploy ArgoCD applications
+  hosts: upstream
+  tags: upstream, rancher, argocd, fleet
+  tasks:
+    - name: Add Fleet project
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: "{{ item }}"
+        definition:
+          apiVersion: fleet.cattle.io/v1alpha1
+          kind: GitRepo
+          metadata:
+            name: argocd-projects
+          spec:
+            branch: main
+            insecureSkipTLSVerify: false
+            paths:
+              - /kubernetes/fleet-argocd-projects
+            repo: https://github.com/diademiemi/project_homelab_v3.git
+            targets:
+              - clusterSelector:
+                  matchExpressions:
+                    - key: provider.cattle.io
+                      operator: NotIn
+                      values:
+                        - harvester
+      loop:
+        - fleet-default  # Deploy to downstream clusters
+        - fleet-local  # Deploy to upstream cluster
+
+...

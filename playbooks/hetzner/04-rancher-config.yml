@@ -1,0 +1,88 @@
+---
+- name: Deploy sops-age-key secret
+  hosts: vm
+  tags: rancher, argocd, sops
+  tasks:
+    - name: Wait for kubeconfig to exist
+      become: true
+      ansible.builtin.wait_for:
+        path: "{{ kubeconfig_path }}"
+        timeout: 300
+
+    - name: Wait for namespace kube-system to exist
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        kind: "Namespace"
+        name: "kube-system"
+      register: namespace
+      retries: 60
+      delay: 5
+      until: |
+        namespace.resources is defined and
+        namespace.resources | length > 0 and
+        namespace.resources[0].metadata is defined and
+        namespace.resources[0].metadata.name is defined and
+        namespace.resources[0].metadata.name == "kube-system"
+
+    - name: Create ArgoCD namespace
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: argocd
+            labels:
+              name: argocd
+
+    - name: Add sops-age-key secret
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: argocd
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: sops-age-key
+          type: Opaque
+          data:
+            keys.txt: "{{ agekey | b64encode }}"
+
+- name: Deploy global Fleet project
+  hosts: upstream
+  tags: upstream, rancher, argocd, fleet
+  tasks:
+    - name: Add Fleet project
+      become: true
+      kubernetes.core.k8s:
+        state: present
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: "{{ item }}"
+        definition:
+          apiVersion: fleet.cattle.io/v1alpha1
+          kind: GitRepo
+          metadata:
+            name: rancher-config
+          spec:
+            branch: main
+            insecureSkipTLSVerify: false
+            paths:
+              - /kubernetes/fleet-global
+            repo: https://github.com/diademiemi/project_homelab_v3.git
+            targets:
+              - clusterSelector:
+                  matchExpressions:
+                    - key: provider.cattle.io
+                      operator: NotIn
+                      values:
+                        - harvester
+      loop:
+        - fleet-default  # Deploy to downstream clusters
+        - fleet-local  # Deploy to upstream cluster
+
+...

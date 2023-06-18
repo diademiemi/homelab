@@ -1,0 +1,52 @@
+---
+- name: Deploy Rancher config with Terraform
+  hosts: localhost
+  tags: rancher, terraform
+  tasks:
+    - name: Bootstrap cluster with Terraform
+      cloud.terraform.terraform:
+        project_path: "{{ lookup('env', 'PWD') }}/terraform/rancher"
+        state: present
+        force_init: true
+        variables_files:
+          - "{{ lookup('env', 'PWD') }}/terraform/rancher/env/vars.tfvars"
+        variables:
+          rancher_bootstrap_password: "{{ rancher_bootstrap_password }}"
+          rancher_users: "{{ terraform_rancher_users | to_json }}"
+      register: rancher_terraform
+
+- name: Set up downstream clusters
+  hosts: downstream
+  tags: downstream, rancher
+  tasks:
+    - name: Run node command
+      become: true
+      ansible.builtin.shell: |
+        set -o pipefail
+        {{ hostvars['localhost']['rancher_terraform']['outputs']['rancher_cluster_node_commands']['value'][rancher_cluster_name] }} \
+        {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
+      args:
+        creates: /etc/rancher/k3s
+        executable: /bin/bash
+
+- name: Remove local-path as default storage class
+  hosts: downstream
+  tags: downstream, rancher
+  tasks:
+    - name: Remove local-path as default storage class
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        merge_type:
+          - strategic-merge
+        kind: "StorageClass"
+        api_version: "storage.k8s.io/v1"
+        name: "local-path"
+        definition:
+          metadata:
+            annotations:
+              storageclass.kubernetes.io/is-default-class: "false"
+      register: local_path_storage_class
+      until: local_path_storage_class is not failed
+
+...
