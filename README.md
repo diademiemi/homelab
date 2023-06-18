@@ -22,6 +22,7 @@ The local NAS is used to store media and backups, and runs a Jellyfin instance t
   - [Content](#content-1)
   - [Dependencies](#dependencies-1)
   - [Instructions](#instructions-1)
+- [License](#license)
 
 
 ## Motivation
@@ -215,3 +216,9 @@ Run the playbooks:
 ```bash
 ansible-playbook playbooks/nas/deploy.yml
 ```
+
+# License
+The code in this project is licensed under the [MIT License](./LICENSE). While my specific setup might not be useful to you, I hope that you can learn something from it and how I use Ansible, Terraform, Rancher and other tools to manage infrastructure. I hope the files in this repository can serve to be a good example of how to integrate all these tools into a single project in a fully automated and DevOps way!  
+
+Please feel free to open an issue if you have any questions on why I did something a certain way or if you have any suggestions on how to improve my setup, I'm always looking to learn more! I will not be providing support for running code this repository, as it is very specific to my setup, but I will try to answer any questions you might have.  
+###### I provide no warranty that this code will work for you and I am not responsible for any damages that may be caused by using this code.  
