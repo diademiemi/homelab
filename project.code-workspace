@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"ansible.python.interpreterPath": "/bin/python3",
+		"markdown.extension.toc.levels": "1..5",
 		"files.associations": {
 			"**/tasks/**/*.yml": "ansible",
 			"**/vars/**/*.yml": "ansible",
@@ -20,8 +21,11 @@
 			"**/requirements.yml": "ansible"
 		},
 		"yaml.schemas": {
-			"https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": "file:///mnt/files/Projects/DevOps/Ansible/Projects/project_homelab_v3/playbooks/hetzner/02-k3s.yml"
-		}
+			"https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": [
+				"file:///mnt/files/Projects/DevOps/Ansible/Projects/project_homelab_v3/playbooks/hetzner/deploy.yml",
+				"file:///mnt/files/Projects/DevOps/Ansible/Projects/project_homelab_v3/playbooks/nas/deploy.yml"
+			]
+		},
 	},
 	"extensions": {
 		"recommendations": [
