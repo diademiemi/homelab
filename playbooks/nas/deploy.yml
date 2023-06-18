@@ -1,0 +1,14 @@
+---
+- name: Prepare NAS
+  tags: prepare
+  ansible.builtin.import_playbook: 01-prepare.yml
+
+- name: Instlal Jellyfin
+  tags: jellyfin
+  ansible.builtin.import_playbook: 02-jellyfin.yml
+
+- name: Deploy Docker project
+  tags: docker
+  ansible.builtin.import_playbook: 03-docker-project.yml
+
+...
