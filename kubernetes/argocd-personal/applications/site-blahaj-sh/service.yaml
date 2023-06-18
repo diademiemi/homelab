@@ -5,7 +5,7 @@ metadata:
   namespace: site-blahaj-sh
 spec:
   selector:
-    app.kubernetes.io/name: site-blahaj-sh
+    app: site-blahaj-sh
   ports:
     - protocol: TCP
       port: 80
