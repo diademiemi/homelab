@@ -192,11 +192,11 @@ Expand this section to see an overview and explanation of the files related to t
 
 File | Type | Purpose
 --- | --- | ---
-`playbooks/nas/deploy.yml` | Ansible Playbook | Playbook to call all other playbooks
-`playbooks/nas/01-prepare.yml` | Ansible Playbook | Install ZFS and Docker
-`playbooks/nas/02-jellyfin.yml` | Ansible Playbook | Install Jellyfin and Intel Arc encode drivers
-`playbooks/nas/03-docker-project.yml` | Ansible Playbook | Install Radarr, Sonarr, Deluge and Minio in Docker
-`inventory/main/host_vars/pizzatower/main.yml` | Ansible Variables | Variables for the NAS deployment
+[`playbooks/nas/deploy.yml`](./playbooks/nas/deploy.yml) | Ansible Playbook | Playbook to call all other playbooks
+[`playbooks/nas/01-prepare.yml`](./playbooks/nas/01-prepare.yml) | Ansible Playbook | Install ZFS and Docker
+[`playbooks/nas/02-jellyfin.yml`](./playbooks/nas/02-jellyfin.yml) | Ansible Playbook | Install Jellyfin and Intel Arc encode drivers
+[`playbooks/nas/03-docker-project.yml`](./playbooks/nas/03-docker-project.yml) | Ansible Playbook | Install Radarr, Sonarr, Deluge and Minio in Docker
+[`inventory/main/host_vars/pizzatower/main.yml`](./inventory/main/host_vars/pizzatower/main.yml) | Ansible Variables | Variables for the NAS deployment
 
 </details>
 
