@@ -10,10 +10,10 @@
           - docker-compose
         state: present
 
-    - name: Deploy Linux ISO fetcher
+    - name: Deploy Docker images fetcher
       community.docker.docker_compose:
         project_name: linux_isos
-        definition: "{{ linux_isos_docker_compose_yaml }}"
+        definition: "{{ docker_project_docker_compose_yaml }}"
 
     - name: Install nginx
       become: true

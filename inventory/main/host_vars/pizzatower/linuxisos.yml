@@ -80,7 +80,7 @@ nginx_hosts:
     location: "/"
     upstream: "http://127.0.0.1:9117"
 
-linux_isos_docker_compose_yaml:
+docker_project_docker_compose_yaml:
   version: "3.4"
   services:
     vpn:
