@@ -42,4 +42,5 @@ helmCharts:
       gitlab-runner:
         runners:
           privileged: true  # For containers in containers
-        checkInterval: 15
+        checkInterval: 60
+        concurrent: 5  # These devour CPU resources, I can't afford more  
