@@ -58,7 +58,7 @@ vms = [
         hostname = "aubrey" # For my private use
         domain = "blahaj.sh"
 
-        vcpu = 12
+        vcpu = 10
         memory = 49152
 
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"

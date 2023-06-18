@@ -1,6 +1,6 @@
 module "vm" {
   source  = "diademiemi/vm/libvirt"
-  version = "4.0.0"
+  version = "4.1.0"
   depends_on = [ libvirt_network.local_net ]
 
   for_each = { for vm in var.vms : vm.hostname => vm }
