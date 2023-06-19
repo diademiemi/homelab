@@ -71,6 +71,8 @@ These are the applications I run on my homelab.
 | [Deluge](https://deluge-torrent.org/) | Linux ISO fetcher | NAS (`PizzaTower`) |
 | [Minio](https://min.io/) | Backup storage | NAS (`PizzaTower`) |
 
+###### I also deploy other workloads that are not managed by this repository and thus are not listed here.
+
 ## External repositories
 These repositories are included in this project. This includes Ansible roles, collections and Terraform modules.  
 | Repository | Type | Purpose |
@@ -83,7 +85,6 @@ These repositories are included in this project. This includes Ansible roles, co
 | [ansible_collection_diademiemi.jellyfin](https://github.com/diademiemi/ansible_collection_diademiemi.jellyfin) | Ansible collection | Roles to install Jellyfin on my NAS |
 | [terraform-libvirt-vm](https://github.com/diademiemi/terraform-libvirt-vm) | Terraform module | Deploy VMs on the `OMORI` host |
 
-###### I also deploy other workloads that are not managed by this repository and thus are not listed here.
 
 # Rancher (Hetzner)
 
@@ -107,7 +108,7 @@ After this is finished and potential backups are restored, a final Fleet project
 
 ## Backups
 
-All data is stored in Longhorn volumes, which are send daily to a Minio instance running on my NAS. Before a redeployment of the Rancher clusters, the Longhorn volumes are backed up to the NAS to be restored between the `04-rancher-config.yml` and `05-applications.yml` playbooks. This is done by running the `playbooks/hetzner/backup/create.yml` playbook.  
+All data is stored in Longhorn volumes, which are sent daily to a Minio instance running on my NAS. Before a redeployment of the Rancher clusters, the Longhorn volumes are backed up to the NAS to be restored between the `04-rancher-config.yml` and `05-applications.yml` playbooks. This is done by running the `playbooks/hetzner/backup/create.yml` playbook.  
 
 This writes a temporary file to the host running Ansible to store the backup names to be restored later. This is not strictly necessary, as this can be retrieved manually using the Rancher UI, but this is a simple way to automate the process. In the future, I would like to automate the lookups of the most recent backups as well, so that this can be ran even after an unexpected required redeployment, but this is not a priority at the moment.  
 
