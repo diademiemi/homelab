@@ -29,7 +29,7 @@
 
 - name: Create backups before reset
   tags: reset, vm-reset, backup, restore-backup, always
-  ansible.builtin.import_playbook: backups/create.yml
+  ansible.builtin.import_playbook: backups/restore.yml
 
 - name: Deploy applications
   tags: applications, always
