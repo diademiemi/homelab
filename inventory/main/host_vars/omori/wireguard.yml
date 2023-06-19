@@ -14,5 +14,12 @@ wireguard_additional_peers:
   - name: Undertale
     public_key: "{{ vault_wireguard_undertale_public_key }}"
     allowed_ips: "192.168.150.5/32,10.107.0.0/16,192.168.100.0/24"
+  - name: Celeste
+    public_key: "{{ vault_wireguard_celeste_public_key }}"
+    allowed_ips: "192.168.150.12/32"
+  - name: Deltarune
+    public_key: "{{ vault_wireguard_deltarune_public_key }}"
+    allowed_ips: "192.168.150.16/32"
+
 
 ...
