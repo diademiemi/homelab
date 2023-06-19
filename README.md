@@ -165,17 +165,17 @@ ansible-galaxy install -r requirements.yml
 
 Run the playbooks:
 ```bash
-ansible-playbook playbooks/nas/deploy.yml
+ansible-playbook playbooks/hetzner/deploy.yml
 ```
 
 Run the playbooks and reset the server:
 ```bash
-ansible-playbook playbooks/nas/deploy.yml --tags=reset
+ansible-playbook playbooks/hetzner/deploy.yml --tags=reset
 ```
 
 Run the playbooks and reset the server without creating backups
 ```bash
-ansible-playbook playbooks/nas/deploy.yml --tags=reset --skip-tags=backup
+ansible-playbook playbooks/hetzner/deploy.yml --tags=reset --skip-tags=backup
 ```
 
 # NAS
