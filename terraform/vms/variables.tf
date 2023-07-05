@@ -21,7 +21,7 @@ variable "vms" {
         disk_size = optional(number)
         libvirt_pool = optional(string)
         disk_passthroughs = optional(list(string))
-        
+
         ssh_keys = list(string)
 
         dhcp = bool

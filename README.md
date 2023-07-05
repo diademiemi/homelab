@@ -90,7 +90,7 @@ These repositories are included in this project. This includes Ansible roles, co
 
 The server at Hetzner runs 4 VMs, each running a Rancher cluster. The VM `Basil` is the upstream cluster, and the other 3 are downstream clusters. Management is done through Rancher on `Basil`.  
 
-The cluster is fully deployed using code in this repository, no manual configuration is required.   
+The cluster is fully deployed using code in this repository, no manual configuration is required.  
 
 ## Deployment
 

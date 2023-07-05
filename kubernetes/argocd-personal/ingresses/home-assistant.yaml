@@ -7,7 +7,7 @@ metadata:
 spec:
   ports:
   - name: http
-    port: 8123 
+    port: 8123
     protocol: TCP
   clusterIP: None
   type: ClusterIP
@@ -41,7 +41,7 @@ spec:
           service:
             name: homeassistant-ip
             port:
-              number: 8123 
+              number: 8123
         path: /
         pathType: Prefix
   tls:

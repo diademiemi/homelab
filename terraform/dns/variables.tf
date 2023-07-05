@@ -26,6 +26,6 @@ variable "dns_records" {
 #         ttl = 1
 #         proxied = false
 #         allow_overwrite = true
-#     }        
+#     }
 # ]
 # But I give this through Ansible so I can dynamically get the IPs

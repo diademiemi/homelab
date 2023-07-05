@@ -42,7 +42,7 @@ resource "rancher2_cluster_v2" "clusters" {
   }
 
   fleet_namespace = each.value.fleet_namespace
-  
+
   kubernetes_version = each.value.kubernetes_version
 
   enable_network_policy = try(each.value.enable_network_policy, false)

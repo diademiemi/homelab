@@ -43,4 +43,4 @@ helmCharts:
         runners:
           privileged: true  # For containers in containers
         checkInterval: 60
-        concurrent: 5  # These devour CPU resources, I can't afford more  
+        concurrent: 5  # These devour CPU resources, I can't afford more

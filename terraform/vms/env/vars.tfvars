@@ -1,4 +1,4 @@
-vms = [ 
+vms = [
     {
         hostname = "basil" # Upstream Rancher cluster
         domain = "blahaj.sh"
@@ -9,7 +9,7 @@ vms = [
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
         disk_size = 107374182400 # 100 GiB
-        
+
         ssh_keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSj6rJkx/d2w1c4qagmh7s/TJQHGOAanWprgiHzUKIW"
         ]
@@ -64,7 +64,7 @@ vms = [
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
         disk_size = 375809638400 # 350 GiB
-        
+
         ssh_keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSj6rJkx/d2w1c4qagmh7s/TJQHGOAanWprgiHzUKIW"
         ]
@@ -123,7 +123,7 @@ vms = [
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
         disk_size = 107374182400 # 100 GiB
-        
+
         ssh_keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSj6rJkx/d2w1c4qagmh7s/TJQHGOAanWprgiHzUKIW"
         ]
@@ -178,7 +178,7 @@ vms = [
         cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 
         disk_size = 322122547200 # 300 GiB
-        
+
         ssh_keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSj6rJkx/d2w1c4qagmh7s/TJQHGOAanWprgiHzUKIW"
         ]
