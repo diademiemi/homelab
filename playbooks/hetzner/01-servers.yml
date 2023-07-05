@@ -191,7 +191,7 @@
     - name: Start and enable dhclient
       become: true
       ansible.builtin.service:
-        name: dhclient
+        name: networking
         state: started
         enabled: true
 

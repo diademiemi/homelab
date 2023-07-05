@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cloud-blahaj-cert
+  namespace: cloud
+spec:
+  secretName: cloud-blahaj-cert
+  commonName: "cloud.blahaj.sh"
+  dnsNames:
+    - "cloud.blahaj.sh"
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

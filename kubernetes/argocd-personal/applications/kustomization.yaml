@@ -3,3 +3,4 @@ resources:
   - ./vaultwarden
   - ./gitlab
   - ./site-blahaj-sh
+  - ./nextcloud

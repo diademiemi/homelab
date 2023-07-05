@@ -1,0 +1,59 @@
+namespace: nextcloud
+
+generators:
+  - ./kustomize-secret-generator.yaml
+
+helmCharts:
+  - name: nextcloud
+    releaseName: nextcloud
+    namespace: nextcloud
+    repo: https://nextcloud.github.io/helm/
+    version: "3.5.15"
+    valuesInline:
+      nextcloud:
+        host: cloud.blahaj.sh
+        username: diademiemi
+        password: "changeme"
+      cronjob:
+        enabled: true
+
+      persistence:
+        enabled: true
+        size: 50Gi
+        nextcloudData:
+          enabled: true
+
+      ingress:
+        className: traefik
+        enabled: true
+        tls:
+          enabled: true
+          secretName: cloud-blahaj-cert
+          hosts:
+            - cloud.blahaj.sh
+
+      internalDatabase:
+        enabled: false
+      externalDatabase:
+        enabled: true
+        type: postgres
+        host: postgres-service:5432
+        database: nextcloud
+        user: nextcloud
+        existingSecret:
+          enable: true
+          name: nextcloud-postgresql
+          usernameKey: username
+          passwordKey: password
+      postgresql:
+        enabled: true
+        primary:
+          persistence: true
+        global:
+          postgresql:
+            auth:
+              database: nextcloud
+              username: nextcloud
+              existingSecret: nextcloud-postgresql
+              secretKeys:
+                userPasswordKey: password

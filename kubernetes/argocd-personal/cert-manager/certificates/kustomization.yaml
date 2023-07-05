@@ -4,3 +4,4 @@ resources:
   - ./notes.yaml
   - ./vault.yaml
   - ./gitlab.yaml
+  - ./cloud.yaml
