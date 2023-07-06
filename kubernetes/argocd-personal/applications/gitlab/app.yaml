@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitlab-app
+  namespace: argocd
+spec:
+  project: gitlab-proj
+  destination:
+    namespace: 'default' # Please set per resource
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: https://github.com/diademiemi/project_homelab_v3.git
+    targetRevision: 'main'
+    path: 'kubernetes/argocd-gitlab'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
