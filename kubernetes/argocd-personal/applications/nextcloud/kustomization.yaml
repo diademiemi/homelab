@@ -30,10 +30,9 @@ helmCharts:
         className: traefik
         enabled: true
         tls:
-          enabled: true
-          secretName: cloud-blahaj-cert
-          hosts:
-            - cloud.blahaj.sh
+          - hosts:
+              - cloud.blahaj.sh
+            secretName: cloud-blahaj-cert
 
       internalDatabase:
         enabled: false
