@@ -12,6 +12,11 @@ helmCharts:
     valuesInline:
       nextcloud:
         host: cloud.blahaj.sh
+        existingSecret:
+          enabled: true
+          secretName: nextcloud-user
+          usernameKey: username
+          passwordKey: password
         username: diademiemi
         password: "changeme"
       cronjob:
@@ -41,8 +46,8 @@ helmCharts:
         database: nextcloud
         user: nextcloud
         existingSecret:
-          enable: true
-          name: nextcloud-postgresql
+          enabled: true
+          secretName: nextcloud-postgresql
           usernameKey: username
           passwordKey: password
 
