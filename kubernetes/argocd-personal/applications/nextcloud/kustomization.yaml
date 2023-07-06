@@ -53,11 +53,11 @@ helmCharts:
         primary:
           persistence:
             enabled: true
-        global:
-          postgresql:
-            auth:
-              database: nextcloud
-              username: nextcloud
-              existingSecret: nextcloud-postgresql
-              secretKeys:
-                userPasswordKey: password
+      global:
+        postgresql:
+          auth:
+            database: nextcloud
+            username: nextcloud
+            existingSecret: nextcloud-postgresql
+            secretKeys:
+              userPasswordKey: password
