@@ -17,8 +17,6 @@ helmCharts:
           secretName: nextcloud-user
           usernameKey: username
           passwordKey: password
-        username: diademiemi
-        password: "changeme"
       cronjob:
         enabled: true
 
@@ -44,7 +42,6 @@ helmCharts:
         type: postgres
         host: postgres-service:5432
         database: nextcloud
-        user: nextcloud
         existingSecret:
           enabled: true
           secretName: nextcloud-postgresql
