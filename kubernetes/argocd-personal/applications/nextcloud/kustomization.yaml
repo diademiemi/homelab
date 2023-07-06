@@ -33,6 +33,8 @@ helmCharts:
           - hosts:
               - cloud.blahaj.sh
             secretName: cloud-blahaj-cert
+      phpClientHttpsFix:
+        enabled: true
 
       internalDatabase:
         enabled: false
