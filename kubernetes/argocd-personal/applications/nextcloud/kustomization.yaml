@@ -45,10 +45,12 @@ helmCharts:
           name: nextcloud-postgresql
           usernameKey: username
           passwordKey: password
+
       postgresql:
         enabled: true
         primary:
-          persistence: true
+          persistence:
+            enabled: true
         global:
           postgresql:
             auth:
