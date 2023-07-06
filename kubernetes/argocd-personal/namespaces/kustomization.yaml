@@ -3,3 +3,4 @@ resources:
   - ./vaultwarden.yaml
   - ./gitlab.yaml
   - ./site-blahaj-sh.yaml
+  - ./nextcloud.yaml
