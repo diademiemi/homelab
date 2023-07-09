@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: libreddit-blahaj-cert
+  namespace: libreddit
+spec:
+  secretName: libreddit-blahaj-cert
+  commonName: libreddit.blahaj.sh
+  dnsNames:
+    - libreddit.blahaj.sh
+  issuerRef:
+    name: blahaj-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+...

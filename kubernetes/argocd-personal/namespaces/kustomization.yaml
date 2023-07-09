@@ -4,3 +4,4 @@ resources:
   - ./gitlab.yaml
   - ./site-blahaj-sh.yaml
   - ./nextcloud.yaml
+  - ./libreddit.yaml

@@ -5,3 +5,4 @@ resources:
   - ./vault.yaml
   - ./gitlab.yaml
   - ./cloud.yaml
+  - ./libreddit.yaml
