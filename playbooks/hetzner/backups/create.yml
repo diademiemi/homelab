@@ -13,9 +13,9 @@
 
     - name: Create list of backup names
       ansible.builtin.set_fact:
-        longhorn_volumes_map: "{{ longhorn_volumes_map | default([]) +
+        longhorn_volumes_map: "{{ longhorn_volumes_map | default([])+
           [{'volumeName': item.metadata.name,
-          'backupName': '{{ ansible_date_time.epoch }}-{{ item.metadata.name }}',
+          'backupName': item.metadata.name ~ ansible_date_time.epoch_int ,
           'pvName': item.status.kubernetesStatus.pvName,
           'pvcName': item.status.kubernetesStatus.pvcName,
           'namespace': item.status.kubernetesStatus.namespace}] }}"
