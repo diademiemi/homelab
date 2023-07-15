@@ -27,8 +27,8 @@
   tags: rancher, rancher-config, always
   ansible.builtin.import_playbook: 04-rancher-config.yml
 
-- name: Create backups before reset
-  tags: reset, vm-reset, backup, restore-backup, always
+- name: Restore backups after reset
+  tags: reset, vm-reset, backup, restore-backup, never
   ansible.builtin.import_playbook: backups/restore.yml
 
 - name: Deploy applications
