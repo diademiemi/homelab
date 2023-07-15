@@ -188,11 +188,4 @@
         state: present
         reload: true
 
-    - name: Start and enable dhclient
-      become: true
-      ansible.builtin.service:
-        name: networking
-        state: started
-        enabled: true
-
 ...

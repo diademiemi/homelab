@@ -6,7 +6,7 @@ vms = [
         vcpu = 4
         memory = 16384
 
-        cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+        cloudinit_image = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
 
         disk_size = 107374182400 # 100 GiB
 
@@ -51,7 +51,7 @@ vms = [
         spice_server_enabled = false
 
         ansible_groups = ["vm", "cloud", "upstream", "rancher"]
-        ansible_user   = "debian"
+        ansible_user   = "ubuntu"
         ansible_host   = "basil"
     },
     {
@@ -61,7 +61,7 @@ vms = [
         vcpu = 10
         memory = 49152
 
-        cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+        cloudinit_image = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
 
         disk_size = 375809638400 # 350 GiB
 
@@ -110,7 +110,7 @@ vms = [
         spice_server_enabled = true
 
         ansible_groups = ["vm", "cloud", "downstream", "personal"]
-        ansible_user   = "debian"
+        ansible_user   = "ubuntu"
         ansible_host   = "aubrey"
     },
     {
@@ -120,7 +120,7 @@ vms = [
         vcpu = 6
         memory = 24576
 
-        cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+        cloudinit_image = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
 
         disk_size = 107374182400 # 100 GiB
 
@@ -165,7 +165,7 @@ vms = [
         spice_server_enabled = false
 
         ansible_groups = ["vm", "cloud", "downstream", "public"]
-        ansible_user   = "debian"
+        ansible_user   = "ubuntu"
         ansible_host   = "kel"
     },
     {
@@ -175,7 +175,7 @@ vms = [
         vcpu = 6
         memory = 32768
 
-        cloudinit_image = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+        cloudinit_image = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
 
         disk_size = 322122547200 # 300 GiB
 
@@ -220,7 +220,7 @@ vms = [
         spice_server_enabled = false
 
         ansible_groups = ["vm", "cloud", "downstream", "qc"]
-        ansible_user   = "debian"
+        ansible_user   = "ubuntu"
         ansible_host   = "hero"
     }
 ]

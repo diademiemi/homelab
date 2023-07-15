@@ -27,6 +27,7 @@
         state: present
 
     - name: Enable iscsid service
+      become: true
       ansible.builtin.service:
         name: iscsid
         enabled: true
