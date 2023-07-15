@@ -1,4 +1,5 @@
 ---
+system_hostname: "aubrey.blahaj.sh"
 rancher_cluster_name: "personal"
 
 agekey: "{{ vault_agekey }}"

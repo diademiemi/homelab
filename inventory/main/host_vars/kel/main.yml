@@ -1,4 +1,5 @@
 ---
+system_hostname: "kel.blahaj.sh"
 rancher_cluster_name: "public"
 
 agekey: "{{ vault_agekey }}"

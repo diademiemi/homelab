@@ -1,4 +1,5 @@
 ---
+system_hostname: "basil.blahaj.sh"
 k3s_role: "master"
 
 k3s_retrieve_kubeconfig: true
