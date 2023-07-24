@@ -48,10 +48,10 @@ This is a table of the relevant hardware in my homelab.
 These VMs are ran on the dedicated server (`OMORI`) at Hetzner. I have purchased multiple IP addresses to assign to each VM.  
 | Hostname | Purpose | OS | CPU | RAM | Storage |
 | --- | --- | --- | --- | --- | --- |
-| `Basil` | Rancher upstream cluster | Debian 11 | 4 vCPU | 16GiB | 1x 100GiB (boot) |
-| `Aubrey` | Rancher cluster for personal applications | Debian 11 | 10 vCPU | 48GiB | 1x 350GiB (boot) |
-| `Kel` | Rancher cluster for public facing applications | Debian 11 | 6 vCPU | 24GiB | 1x 100GiB (boot) |
-| `Hero` | Rancher cluster for [Queer Coded](https://github.com/queercoded-dev) (pending) | Debian 11 | 6 vCPU | 32GiB | 1x 300GiB (boot) |
+| `Basil` | Rancher upstream cluster | Ubuntu 22.04 | 4 vCPU | 16GiB | 1x 100GiB (boot) |
+| `Aubrey` | Rancher cluster for personal applications | Ubuntu 22.04 | 10 vCPU | 48GiB | 1x 350GiB (boot) |
+| `Kel` | Rancher cluster for public facing applications | Ubuntu 22.04 | 6 vCPU | 24GiB | 1x 100GiB (boot) |
+| `Hero` | Rancher cluster for [Queer Coded](https://github.com/queercoded-dev) (pending) | Ubuntu 22.04 | 6 vCPU | 32GiB | 1x 300GiB (boot) |
 ###### These are characters from the game OMORI, quite fitting if you are familiar with the story ;)
 
 ## Applications
@@ -63,6 +63,7 @@ These are the applications I run on my homelab.
 | [Joplin Server](https://joplinapp.org/) | Cloud sync for Joplin notes application | Personal cluster (`Aubrey`) |
 | [Vaultwarden](https://github.com/dani-garcia/vaultwarden) | Password manager | Personal cluster (`Aubrey`) |
 | [GitLab](https://gitlab.com/) | Git mirror | Personal cluster (`Aubrey`) |
+| [Nextcloud](https://nextcloud.com/) | Personal cloud | Personal cluster (`Aubrey`) |
 | [ArgoCD](https://argoproj.github.io/argo-cd/) | GitOps for workloads | All rancher clusters |
 | [Wireguard](https://www.wireguard.com/) | Local network access | dedicated server (`OMORI`), router (`Undertale`) |
 | [Jellyfin](https://jellyfin.org/) | Media server | NAS (`PizzaTower`) |
