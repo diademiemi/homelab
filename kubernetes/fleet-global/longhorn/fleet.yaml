@@ -4,7 +4,7 @@ helm:
   releaseName: longhorn
   chart: longhorn
   repo: https://charts.rancher.io/
-  version: "102.2.1+up1.4.2"
+  version: "102.3.0+up1.5.1"
 
   values:
     persistence:
@@ -35,12 +35,3 @@ targetCustomizations:
     values:
       defaultSettings:
         backupTarget: "s3://longhorn-backups-public@minio/"
-
-- name: qc
-  clusterSelector:
-    matchLabels:
-      identifier/name: qc
-  helm:
-    values:
-      defaultSettings:
-        backupTarget: "s3://longhorn-backups-qc@minio/"

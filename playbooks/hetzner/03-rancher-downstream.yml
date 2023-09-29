@@ -26,7 +26,7 @@
         {{ hostvars['localhost']['rancher_terraform']['outputs']['rancher_cluster_node_commands']['value'][rancher_cluster_name] }} \
         {{ rancher_node_command_args | default('--etcd --controlplane --worker') }}
       args:
-        creates: /etc/rancher/k3s
+        creates: /etc/rancher/rke2
         executable: /bin/bash
 
 - name: Remove local-path as default storage class

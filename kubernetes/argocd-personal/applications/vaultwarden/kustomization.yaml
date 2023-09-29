@@ -5,7 +5,7 @@ helmCharts:
     releaseName: vaultwarden
     namespace: vaultwarden
     repo: https://diademiemi.github.io/charts
-    version: "0.2.0"
+    version: "0.3.0"
     valuesInline:
       image:
         repository: vaultwarden/server

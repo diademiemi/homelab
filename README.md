@@ -51,7 +51,6 @@ These VMs are ran on the dedicated server (`OMORI`) at Hetzner. I have purchased
 | `Basil` | Rancher upstream cluster | Ubuntu 22.04 | 4 vCPU | 16GiB | 1x 100GiB (boot) |
 | `Aubrey` | Rancher cluster for personal applications | Ubuntu 22.04 | 10 vCPU | 48GiB | 1x 350GiB (boot) |
 | `Kel` | Rancher cluster for public facing applications | Ubuntu 22.04 | 6 vCPU | 24GiB | 1x 100GiB (boot) |
-| `Hero` | Rancher cluster for [Queer Coded](https://github.com/queercoded-dev) (pending) | Ubuntu 22.04 | 6 vCPU | 32GiB | 1x 300GiB (boot) |
 ###### These are characters from the game OMORI, quite fitting if you are familiar with the story ;)
 
 ## Applications
@@ -60,7 +59,7 @@ These are the applications I run on my homelab.
 | --- | --- | --- |
 | [Rancher](https://rancher.com/) | Kubernetes cluster management | Upstream cluster (`Basil`) |
 | [Longhorn](https://longhorn.io/) | Storage for Kubernetes | All rancher clusters |
-| [Joplin Server](https://joplinapp.org/) | Cloud sync for Joplin notes application | Personal cluster (`Aubrey`) |
+| [Nextcloud](https://nextcloud.com/) | Personal cloud | Personal cluster (`Aubrey`) |
 | [Vaultwarden](https://github.com/dani-garcia/vaultwarden) | Password manager | Personal cluster (`Aubrey`) |
 | [GitLab](https://gitlab.com/) | Git mirror | Personal cluster (`Aubrey`) |
 | [Nextcloud](https://nextcloud.com/) | Personal cloud | Personal cluster (`Aubrey`) |
@@ -79,7 +78,7 @@ These repositories are included in this project. This includes Ansible roles, co
 | Repository | Type | Purpose |
 | --- | --- | --- |
 | [ansible_role_docker](https://github.com/diademiemi/ansible_role_docker) | Ansible role | Install Docker on my NAS |
-| [ansible_role_k3s](https://github.com/diademiemi/ansible_role_k3s) | Ansible role | Install K3S on the `Basil` VM for Rancher |
+| [ansible_role_rke2](https://github.com/diademiemi/ansible_role_rke2) | Ansible role | Install rke2 on the `Basil` VM for Rancher |
 | [ansible_role_helm](https://github.com/diademiemi/ansible_role_helm) | Ansible role | Install Helm on the `Basil` VM for Rancher |
 | [ansible_role_openzfs](https://github.com/diademiemi/ansible_role_openzfs) | Ansible role | Install OpenZFS on my NAS |
 | [ansible_role_wireguard](https://github.com/diademiemi/ansible_role_wireguard) | Ansible role | Install Wireguard on the `OMORI` host to connect to the `Undertale` router |
@@ -132,13 +131,12 @@ File | Type | Purpose
 [`playbooks/hetzner/05-applications.yml`](./playbooks/hetzner/05-applications.yml) | Ansible Playbook | Playbook to deploy the ArgoCD application to the Rancher clusters
 [`playbooks/hetzner/backups/create.yml`](./playbooks/hetzner/backups/create.yml) | Ansible Playbook | Playbook to backups of all Longhorn volumes to the NAS and store the backup names in a temporary file
 [`playbooks/hetzner/backups/restore.yml`](playbooks/hetzner/backups/restore.yml) | Ansible Playbook | Playbook to restore the Longhorn volumes from the NAS
-[`inventory/main/group_vars/all/main.yml`](./inventory/main/group_vars/all/main.yml) | Ansible Variables | Variables used by all hosts in the inventory. This includes Wireguard options, Hetzner, K3S and Rancher options
+[`inventory/main/group_vars/all/main.yml`](./inventory/main/group_vars/all/main.yml) | Ansible Variables | Variables used by all hosts in the inventory. This includes Wireguard options, Hetzner, rke2 and Rancher options
 [`inventory/main/host_vars/omori/wireguard.yml`](./inventory/main/host_vars/omori/wireguard.yml) | Ansible Variables | Variables used to deploy Wireguard on the `omori` host. This includes the Wireguard IP addresses, keys and hosts to connect
 [`inventory/main/host_vars/omori/system.yml`](./inventory/main/host_vars/omori/system.yml) | Ansible Variables | Variables used to configure the `omori` host.
-[`inventory/main/host_vars/basil/main.yml`](./inventory/main/host_vars/basil/main.yml) | Ansible Variables | Variables used by the `basil` host. This includes options for the K3S deployment and the secret age key
+[`inventory/main/host_vars/basil/main.yml`](./inventory/main/host_vars/basil/main.yml) | Ansible Variables | Variables used by the `basil` host. This includes options for the rke2 deployment and the secret age key
 [`inventory/main/host_vars/aubrey/main.yml`](./inventory/main/host_vars/aubrey/main.yml) | Ansible Variables | Variables used by the `aubrey` host. This includes the cluster name and secret age key
 [`inventory/main/host_vars/kel/main.yml`](./inventory/main/host_vars/kel/main.yml) | Ansible Variables | Variables used by the `kel` host. This includes the cluster name and secret age key
-[`inventory/main/host_vars/hero/main.yml`](./inventory/main/host_vars/hero/main.yml) | Ansible Variables | Variables used by the `hero` host. This includes the cluster name and secret age key
 [`inventory/main/host_vars/localhost/terraform.yml`](./inventory/main/host_vars/localhost/terraform.yml) | Ansible Variables | Variables used that are fed into Terraform. This includes extra DNS records, Cloudflare variables and the Rancher users so that they can be encrypted with Ansible Vault
 [`inventory/main/host_vars/localhost/hetzner.yml`](./inventory/main/host_vars/localhost/hetzner.yml) | Ansible Variables | Variables used that are used to communicate with the Hetzner API
 [`terraform/vms/*.tf`](./terraform/vms/) | Terraform | Terraform files to deploy the VMs to the dedicated server

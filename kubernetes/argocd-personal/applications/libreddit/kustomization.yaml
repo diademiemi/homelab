@@ -8,6 +8,8 @@ helmCharts:
     version: "0.1.1"
     valuesInline:
       ingress:
+        annotations:
+          ingress.kubernetes.io/force-ssl-redirect: "true"
         enabled: true
         hosts:
           - host: libreddit.blahaj.sh

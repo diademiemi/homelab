@@ -1,5 +1,4 @@
 resources:
-  - ./joplin-server
   - ./vaultwarden
   - ./gitlab
   - ./site-blahaj-sh

@@ -33,11 +33,11 @@
         enabled: true
         state: started
 
-- name: Set up a K3S cluster for Rancher
+- name: Set up a rke2 cluster for Rancher
   hosts: rancher
-  tags: upstream, rancher, k3s
+  tags: upstream, rancher, rke2
   roles:
-    - { role: diademiemi.k3s, tags: ["k3s", "deploy"]}
+    - { role: diademiemi.rke2, tags: ["rke2", "deploy"]}
     - { role: diademiemi.helm, tags: ["helm", "deploy"]}
 
 - name: Generate bootstrap password
@@ -98,7 +98,7 @@
           global:
             cattle:
               psp:
-                enabled: false # For K3S
+                enabled: false # For rke2
 
     - name: Wait for rancher to be ready
       become: true

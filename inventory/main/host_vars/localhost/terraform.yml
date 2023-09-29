@@ -10,21 +10,32 @@ dns_records:
     type: "CNAME"
     ttl: 1
     value: "aubrey.blahaj.sh"
-    proxied: false
+    proxied: true
     allow_overwrite: true
   - name: "blahaj.sh"
     zone_id: "{{ terraform_domain_zone_map['blahaj']['sh'] }}"
     type: "CNAME"
     ttl: 1
     value: "aubrey.blahaj.sh"
+    proxied: true
+    allow_overwrite: true
+  - name: "tonetag.is"
+    zone_id: "{{ terraform_domain_zone_map['tonetag']['is'] }}"
+    type: "CNAME"
+    ttl: 1
+    value: "kel.blahaj.sh"
     proxied: false
     allow_overwrite: true
 
 terraform_domain_zone_map:
+  diademiemi:
+    me: "72bea38f2a542b196e1b6454f359e7a7"
   blahaj:
     sh: "26c4cee4cc505e99a566c577895cab4a"
   queercoded:
     dev: "6a3f0f8093ccbe852a7212bb81df6c03"
+  tonetag:
+    is: "d78598f3e1da5133c88e3bf61b7cca21"
 
 terraform_rancher_users:
   - name: "diademiemi"

@@ -32,6 +32,8 @@ kind: Ingress
 metadata:
   name: jellyfin-service
   namespace: ingresses
+  annotations:
+    ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
   - host: media.blahaj.sh

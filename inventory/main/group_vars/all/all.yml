@@ -1,11 +1,7 @@
 ---
 wireguard_master_inventory_hostname: omori
 
-k3s_version: "v1.25.10+k3s1"
-
-k3s_extra_server_args: "--node-name {{ ansible_facts['hostname'] }}"
-
-kubeconfig_path: "/etc/rancher/k3s/k3s.yaml"
+kubeconfig_path: "/etc/rancher/rke2/rke2.yaml"
 
 rancher_bootstrap_password: "{{ vault_rancher_bootstrap_password }}"
 

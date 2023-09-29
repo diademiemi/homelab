@@ -1,9 +1,12 @@
 ---
 system_hostname: "basil.blahaj.sh"
-k3s_role: "master"
+rke2_channel: "v1.26"
+rke2_type: "server"
+rke2_tls_san:
+  - "blahaj.sh"
 
-k3s_retrieve_kubeconfig: true
-k3s_kubeconfig_local_dest: ~/.kube/config-hetzner_server
+# rke2_retrieve_kubeconfig: true
+# rke2_kubeconfig_local_dest: ~/.kube/config-hetzner_server
 
 agekey: "{{ vault_agekey }}"
 
