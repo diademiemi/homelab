@@ -33,20 +33,17 @@
   hosts: downstream
   tags: downstream, rancher
   tasks:
-    - name: Remove local-path as default storage class
+    - name: Remove local-path as storage class
       become: true
       kubernetes.core.k8s:
         kubeconfig: "{{ kubeconfig_path }}"
-        merge_type:
-          - strategic-merge
         kind: "StorageClass"
         api_version: "storage.k8s.io/v1"
         name: "local-path"
-        definition:
-          metadata:
-            annotations:
-              storageclass.kubernetes.io/is-default-class: "false"
+        state: absent
       register: local_path_storage_class
       until: local_path_storage_class is not failed
+      retries: 60
+      delay: 10
 
 ...

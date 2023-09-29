@@ -24,7 +24,7 @@
     - name: Write out to file per host
       ansible.builtin.copy:
         content: "{{ longhorn_volumes_map | to_nice_json }}"
-        dest: "/{{ longhorn_volume_map_local_dir }}/longhorn_volumes_map_{{ inventory_hostname }}.json"
+        dest: "{{ longhorn_volume_map_local_dir }}/longhorn_volumes_map_{{ inventory_hostname }}.json"
         mode: '0644'
       delegate_to: localhost
       when: longhorn_volumes_map is defined
