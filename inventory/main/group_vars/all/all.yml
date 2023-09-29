@@ -7,6 +7,8 @@ rancher_bootstrap_password: "{{ vault_rancher_bootstrap_password }}"
 
 hetzner_server_number: "{{ vault_hetzner_server_number }}"
 
-longhorn_volume_map_local_dir: "{{ lookup('env', 'HOME') }}/.tmp/longhorn-volumes"
+longhorn_volume_map_local_dir: "~/.tmp/longhorn-volumes"
+
+wireguard_hosts: ["omori"]
 
 ...
