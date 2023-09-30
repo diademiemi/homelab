@@ -1,0 +1,319 @@
+- name: Upgrade Nextcloud Postgres data version
+  hosts: aubrey
+  tags: nextcloud
+  vars:
+    nextcloud_namespace: nextcloud
+    nextcloud_postgres_deployment: nextcloud-postgresql
+    nextcloud_postgres_pod: "{{ nextcloud_postgres_deployment }}-0"
+    nextcloud_pvc_name: "data-{{ nextcloud_postgres_deployment }}-0"
+    nextcloud_postgres_scale: 1
+    old_nextcloud_postgres_image: "docker.io/bitnami/postgresql:14-debian-11"
+    new_nextcloud_postgres_image: "docker.io/bitnami/postgresql:15-debian-11"
+    bitnami_shell_image: "docker.io/bitnami/os-shell:11-debian-11-r77"
+    optional_new_storageclass: longhorn
+  tasks:
+    - name: Scale back postgres to 0 pods for maintenance
+      become: true
+      kubernetes.core.k8s_scale:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: apps/v1
+        kind: StatefulSet
+        name: "{{ nextcloud_postgres_deployment }}"
+        namespace: "{{ nextcloud_namespace }}"
+        replicas: 0
+        wait_timeout: 60
+
+    - name: Retrieve StatefulSet
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: apps/v1
+        kind: StatefulSet
+        name: "{{ nextcloud_postgres_deployment }}"
+        namespace: "{{ nextcloud_namespace }}"
+      register: statefulset_info
+
+    - name: Create a temporary pod with {{ old_nextcloud_postgres_image }}
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: "{{ nextcloud_postgres_pod }}-upgrade"
+            namespace: "{{ nextcloud_namespace }}"
+            labels:
+              app: "{{ nextcloud_postgres_deployment }}"
+          spec:
+            containers:
+              - name: postgres
+                image: "{{ old_nextcloud_postgres_image }}"
+                image_pull_policy: IfNotPresent
+                env:
+                  - name: POSTGRES_USER
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_USER') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_USER') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                  - name: POSTGRES_PASSWORD
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_PASSWORD') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_PASSWORD') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                  - name: POSTGRES_DATABASE
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_DATABASE') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_DATABASE') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                  - name: POSTGRES_POSTGRES_PASSWORD
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_POSTGRES_PASSWORD') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_POSTGRES_PASSWORD') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                ports:
+                  - containerPort: 5432
+                    name: postgres
+                volumeMounts:
+                  - name: data
+                    mountPath: /bitnami/postgresql
+            volumes:
+              - name: data
+                persistentVolumeClaim:
+                  claimName: "{{ nextcloud_pvc_name }}"
+      register: pod_info
+
+    - name: Wait for pod to be ready
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Pod
+        name: "{{ nextcloud_postgres_pod }}-upgrade"
+        namespace: "{{ nextcloud_namespace }}"
+      register: pod_wait
+      retries: 18
+      delay: 10
+      until: pod_wait.resources[0].status.phase == "Running"
+
+    - name: Create postgres dump
+      become: true
+      kubernetes.core.k8s_exec:
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: "{{ nextcloud_namespace }}"
+        pod: "{{ nextcloud_postgres_pod }}-upgrade"
+        container: postgres
+        command: |
+          /bin/bash -c 'rm -f /tmp/dump.sql; export PGPASSWORD="$POSTGRES_POSTGRES_PASSWORD"; pg_dumpall -U postgres -h localhost -p 5432 -f /tmp/dump.sql'
+      register: dump_info
+
+    - name: Copy dump to host
+      become: true
+      kubernetes.core.k8s_cp:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: from_pod
+        namespace: "{{ nextcloud_namespace }}"
+        pod: "{{ nextcloud_postgres_pod }}-upgrade"
+        remote_path: /tmp/dump.sql
+        local_path: "/tmp/{{ nextcloud_postgres_pod }}-upgrade-dump.sql"
+
+    - name: Delete temporary pod
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Pod
+        name: "{{ nextcloud_postgres_pod }}-upgrade"
+        namespace: "{{ nextcloud_namespace }}"
+        state: absent
+
+    - name: Wait for pod to be deleted
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Pod
+        name: "{{ nextcloud_postgres_pod }}-upgrade"
+        namespace: "{{ nextcloud_namespace }}"
+      register: pod_wait
+      retries: 18
+      delay: 10
+      until: pod_wait.resources | length == 0
+
+    - name: Get old PVC
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: "{{ nextcloud_pvc_name }}"
+        namespace: "{{ nextcloud_namespace }}"
+      register: pvc_info
+
+    - name: Delete old PVC
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: "{{ nextcloud_pvc_name }}"
+        namespace: "{{ nextcloud_namespace }}"
+        state: absent
+
+    - name: Wait for PVC to be deleted
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: "{{ nextcloud_pvc_name }}"
+        namespace: "{{ nextcloud_namespace }}"
+      register: pvc_wait
+      retries: 18
+      delay: 10
+      until: pvc_wait.resources | length == 0
+
+    - name: Create new PVC with same data
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: "{{ nextcloud_pvc_name }}"
+            namespace: "{{ nextcloud_namespace }}"
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: "{{ pvc_info.resources[0].spec.resources.requests.storage }}"
+            storageClassName: "{{ optional_new_storageclass | default(pvc_info.resources[0].spec.storageClassName) }}"
+      register: new_pvc_info
+
+    - name: Create a temporary pod with  {{ new_nextcloud_postgres_image }}
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: "{{ nextcloud_postgres_pod }}-upgrade"
+            namespace: "{{ nextcloud_namespace }}"
+            labels:
+              app: "{{ nextcloud_postgres_deployment }}"
+          spec:
+            initContainers:
+              - name: init-chmod-data
+                image: "{{ bitnami_shell_image }}"
+                image_pull_policy: IfNotPresent
+                command:
+                  - /bin/sh
+                  - -ec
+                  - |
+                    chown 1001:1001 /bitnami/postgresql
+                    mkdir -p /bitnami/postgresql/data
+                    chown 1001:1001 /bitnami/postgresql/data
+                    chmod 700 /bitnami/postgresql/data
+                securityContext:
+                  runAsUser: 0
+                volumeMounts:
+                  - name: data
+                    mountPath: /bitnami/postgresql
+            containers:
+              - name: postgres
+                image: "{{ new_nextcloud_postgres_image }}"
+                image_pull_policy: IfNotPresent
+                env:
+                  - name: POSTGRES_USER
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_USER') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_USER') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                  - name: POSTGRES_PASSWORD
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_PASSWORD') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_PASSWORD') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                  - name: POSTGRES_DATABASE
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_DATABASE') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_DATABASE') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                  - name: POSTGRES_POSTGRES_PASSWORD
+                    value: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_POSTGRES_PASSWORD') | map(attribute='value') | list | first | default(omit) }}"
+                    valueFrom: "{{ statefulset_info.resources[0].spec.template.spec.containers[0].env
+                      | selectattr('name', 'equalto', 'POSTGRES_POSTGRES_PASSWORD') | map(attribute='valueFrom') | list | first | default(omit) }}"
+                ports:
+                  - containerPort: 5432
+                    name: postgres
+                volumeMounts:
+                  - name: data
+                    mountPath: /bitnami/postgresql
+            volumes:
+              - name: data
+                persistentVolumeClaim:
+                  claimName: "{{ nextcloud_pvc_name }}"
+      register: pod_info
+
+    - name: Wait for pod to be ready
+      become: true
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Pod
+        name: "{{ nextcloud_postgres_pod }}-upgrade"
+        namespace: "{{ nextcloud_namespace }}"
+      register: pod_info
+      retries: 18
+      delay: 10
+      until: pod_info.resources[0].status.phase == "Running"
+
+    - name: Copy dump to new pod
+      become: true
+      kubernetes.core.k8s_cp:
+        kubeconfig: "{{ kubeconfig_path }}"
+        state: to_pod
+        namespace: "{{ nextcloud_namespace }}"
+        pod: "{{ nextcloud_postgres_pod }}-upgrade"
+        container: postgres
+        remote_path: /tmp/dump.sql
+        local_path: "/tmp/{{ nextcloud_postgres_pod }}-upgrade-dump.sql"
+      register: copy_info
+
+    - name: Restore postgres dump
+      become: true
+      kubernetes.core.k8s_exec:
+        kubeconfig: "{{ kubeconfig_path }}"
+        namespace: "{{ nextcloud_namespace }}"
+        pod: "{{ nextcloud_postgres_pod }}-upgrade"
+        container: postgres
+        command: |
+          /bin/bash -c 'export PGPASSWORD="$POSTGRES_POSTGRES_PASSWORD"; psql -U postgres -h localhost -p 5432 -f /tmp/dump.sql'
+      register: restore_info
+
+    - name: Delete temporary pod
+      become: true
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: v1
+        kind: Pod
+        name: "{{ nextcloud_postgres_pod }}-upgrade"
+        namespace: "{{ nextcloud_namespace }}"
+        state: absent
+
+    - name: Scale up postgres to 1 pod
+      become: true
+      kubernetes.core.k8s_scale:
+        kubeconfig: "{{ kubeconfig_path }}"
+        api_version: apps/v1
+        kind: StatefulSet
+        name: "{{ nextcloud_postgres_deployment }}"
+        namespace: "{{ nextcloud_namespace }}"
+        replicas: "{{ nextcloud_postgres_scale | int }}"
+        wait_timeout: 60
+
+...
