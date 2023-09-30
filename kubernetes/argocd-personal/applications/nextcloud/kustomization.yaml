@@ -11,6 +11,7 @@ helmCharts:
     version: "4.3.1"
     valuesInline:
       nextcloud:
+        update: 1  # Trigger update
         host: cloud.blahaj.sh
         existingSecret:
           enabled: true
