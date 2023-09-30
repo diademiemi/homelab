@@ -4,7 +4,8 @@ metadata:
   name: site-blahaj-sh
   namespace: site-blahaj-sh
   annotations:
-    ingress.kubernetes.io/force-ssl-redirect: "false"  # Cloudflare handles this
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"  # Cloudflare handles this
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Cloudflare handles this
 spec:
   rules:
     - host: blahaj.sh
