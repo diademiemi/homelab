@@ -27,6 +27,7 @@ helmCharts:
           enabled: true
 
       ingress:
+        enabled: true
         className: nginx
         annotations:
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"  # Cloudflare E2E enabled
