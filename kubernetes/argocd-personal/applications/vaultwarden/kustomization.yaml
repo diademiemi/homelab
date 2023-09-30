@@ -23,8 +23,8 @@ helmCharts:
       ingress:
         enabled: true
         annotations:
-          nginx.ingress.kubernetes.io/force-ssl-redirect: "false"  # Cloudflare handles this
-          nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Cloudflare handles this
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"  # Cloudflare E2E enabled
+          nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Cloudflare E2E enabled
         hosts:
           - host: vault.blahaj.sh
             paths:
