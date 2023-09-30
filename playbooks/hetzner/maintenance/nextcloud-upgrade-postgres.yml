@@ -1,3 +1,4 @@
+---
 - name: Upgrade Nextcloud Postgres data version
   hosts: aubrey
   tags: nextcloud
@@ -12,6 +13,34 @@
     bitnami_shell_image: "docker.io/bitnami/os-shell:11-debian-11-r77"
     optional_new_storageclass: longhorn
   tasks:
+    - name: Prompt for confirmation
+      ansible.builtin.pause:
+        prompt: |
+          This will recreate the postgres PVC. This should not cause any data loss, but before any upgrade, please make sure you HAVE BACKUPS.
+          Type 'yes' in all caps to confirm"
+      register: confirmation
+      run_once: true
+      delegate_to: localhost
+
+    - name: Fail if confirmation is not 'YES'
+      ansible.builtin.fail:
+        msg: "Confirmation not 'YES'"
+      when:
+        - confirmation.user_input != "YES"
+
+    - name: Prompt for confirmation
+      ansible.builtin.pause:
+        prompt: "YOU HAVE BACKUPS? Type 'yes' in all caps to confirm"
+      register: confirmation_2
+      run_once: true
+      delegate_to: localhost
+
+    - name: Fail if confirmation is not 'YES'
+      ansible.builtin.fail:
+        msg: "Confirmation not 'YES'"
+      when:
+        - confirmation_2.user_input != "YES"
+
     - name: Scale back postgres to 0 pods for maintenance
       become: true
       kubernetes.core.k8s_scale:
@@ -315,5 +344,11 @@
         namespace: "{{ nextcloud_namespace }}"
         replicas: "{{ nextcloud_postgres_scale | int }}"
         wait_timeout: 60
+
+    - name: Provide info
+      ansible.builtin.debug:
+        msg: |
+          Upgrade complete, please check the logs of the pod {{ nextcloud_postgres_pod }}-0 for any errors.
+          All data has been reimported with a new Postgres version, please check that the data is correct before starting the upgrade.
 
 ...
