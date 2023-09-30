@@ -24,7 +24,7 @@ dns_records:
     type: "CNAME"
     ttl: 1
     value: "kel.blahaj.sh"
-    proxied: false
+    proxied: true
     allow_overwrite: true
 
 terraform_domain_zone_map:
