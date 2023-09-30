@@ -8,7 +8,7 @@ helmCharts:
     releaseName: gitlab
     namespace: gitlab
     repo: https://charts.gitlab.io
-    version: "7.0.4"
+    version: "7.4.1"
     valuesInline:
       global:
         https: true
