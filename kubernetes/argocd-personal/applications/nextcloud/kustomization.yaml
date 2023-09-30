@@ -28,7 +28,9 @@ helmCharts:
 
       ingress:
         className: nginx
-        enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "false"  # Cloudflare handles this
+          nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Cloudflare handles this
         tls:
           - hosts:
               - cloud.blahaj.sh

@@ -20,6 +20,9 @@ helmCharts:
         pdb:
           apiVersion: "policy/v1"
         ingress:
+          annotations:
+            nginx.ingress.kubernetes.io/force-ssl-redirect: "false"  # Cloudflare handles this
+            nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Cloudflare handles this
           apiVersion: "networking.k8s.io/v1"
           class: "nginx"
           enabled: true

@@ -33,7 +33,8 @@ metadata:
   name: homeassistant-service
   namespace: ingresses
   annotations:
-    ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"  # Cloudflare handles this
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Cloudflare handles this
 spec:
   rules:
   - host: home.blahaj.sh
