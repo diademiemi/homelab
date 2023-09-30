@@ -1,7 +1,6 @@
 resources:
   - ./home.yaml
   - ./media.yaml
-  - ./notes.yaml
   - ./vault.yaml
   - ./gitlab.yaml
   - ./cloud.yaml
