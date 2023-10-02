@@ -119,7 +119,7 @@
           value: "{{ item.value.ansible_default_ipv4.address }}"
           type: "A"
           ttl: 1
-          proxied: false
+          proxied: true
           allow_overwrite: true
       loop: "{{ hostvars | dict2items }}"
       when: item.key in ansible_play_hosts and item.key != 'localhost'
