@@ -1,6 +1,6 @@
 ---
-rancher_release_type: latest  # https://github.com/rancher/fleet/issues/1507
-rancher_version: "2.7.5-rc4"
+rancher_release_type: stable  # https://github.com/rancher/fleet/issues/1507
+rancher_version: "2.7.6"
 
 rancher_cluster_name: "upstream"
 
