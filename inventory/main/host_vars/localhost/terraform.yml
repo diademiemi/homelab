@@ -10,14 +10,14 @@ dns_records:
     type: "CNAME"
     ttl: 1
     value: "aubrey.blahaj.sh"
-    proxied: true
+    proxied: false
     allow_overwrite: true
   - name: "blahaj.sh"
     zone_id: "{{ terraform_domain_zone_map['blahaj']['sh'] }}"
     type: "CNAME"
     ttl: 1
     value: "aubrey.blahaj.sh"
-    proxied: true
+    proxied: false
     allow_overwrite: true
   - name: "tonetag.is"
     zone_id: "{{ terraform_domain_zone_map['tonetag']['is'] }}"
