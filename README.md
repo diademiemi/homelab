@@ -51,6 +51,7 @@ These VMs are ran on the dedicated server (`OMORI`) at Hetzner. I have purchased
 | `Basil` | Rancher upstream cluster | Ubuntu 22.04 | 4 vCPU | 16GiB | 1x 100GiB (boot) |
 | `Aubrey` | Rancher cluster for personal applications | Ubuntu 22.04 | 10 vCPU | 48GiB | 1x 350GiB (boot) |
 | `Kel` | Rancher cluster for public facing applications | Ubuntu 22.04 | 6 vCPU | 24GiB | 1x 100GiB (boot) |
+| `Hero` | Rancher cluster for [Queer Coded](https://github.com/queercoded-dev) (pending) | Ubuntu 22.04 | 6 vCPU | 32GiB | 1x 300GiB (boot) |
 ###### These are characters from the game OMORI, quite fitting if you are familiar with the story ;)
 
 ## Applications
@@ -137,6 +138,7 @@ File | Type | Purpose
 [`inventory/main/host_vars/basil/main.yml`](./inventory/main/host_vars/basil/main.yml) | Ansible Variables | Variables used by the `basil` host. This includes options for the rke2 deployment and the secret age key
 [`inventory/main/host_vars/aubrey/main.yml`](./inventory/main/host_vars/aubrey/main.yml) | Ansible Variables | Variables used by the `aubrey` host. This includes the cluster name and secret age key
 [`inventory/main/host_vars/kel/main.yml`](./inventory/main/host_vars/kel/main.yml) | Ansible Variables | Variables used by the `kel` host. This includes the cluster name and secret age key
+[`inventory/main/host_vars/hero/main.yml`](./inventory/main/host_vars/hero/main.yml) | Ansible Variables | Variables used by the `hero` host. This includes the cluster name and secret age key
 [`inventory/main/host_vars/localhost/terraform.yml`](./inventory/main/host_vars/localhost/terraform.yml) | Ansible Variables | Variables used that are fed into Terraform. This includes extra DNS records, Cloudflare variables and the Rancher users so that they can be encrypted with Ansible Vault
 [`inventory/main/host_vars/localhost/hetzner.yml`](./inventory/main/host_vars/localhost/hetzner.yml) | Ansible Variables | Variables used that are used to communicate with the Hetzner API
 [`terraform/vms/*.tf`](./terraform/vms/) | Terraform | Terraform files to deploy the VMs to the dedicated server
