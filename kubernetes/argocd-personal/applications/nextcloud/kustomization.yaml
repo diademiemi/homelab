@@ -31,6 +31,7 @@ helmCharts:
         enabled: true
         className: nginx
         annotations:
+          nginx.ingress.kubernetes.io/proxy-body-size: 5tb  # Allow large uploads
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"  # Cloudflare E2E enabled
           nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Cloudflare E2E enabled
         tls:
