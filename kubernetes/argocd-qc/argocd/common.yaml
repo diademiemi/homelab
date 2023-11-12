@@ -30,7 +30,7 @@ spec:
     namespace: 'common'
     server: 'https://kubernetes.default.svc'
   source:
-    repoURL: https://github.com/queercoded/argocd.git
+    repoURL: https://github.com/queercoded-dev/argocd.git
     targetRevision: 'main'
     path: 'common'
   syncPolicy:
