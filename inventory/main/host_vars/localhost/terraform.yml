@@ -26,6 +26,13 @@ dns_records:
     value: "kel.blahaj.sh"
     proxied: true
     allow_overwrite: true
+  - name: "webring.queercoded.dev"
+    zone_id: "{{ terraform_domain_zone_map['queercoded']['dev'] }}"
+    type: "CNAME"
+    ttl: 1
+    value: "hero.blahaj.sh"
+    proxied: true
+    allow_overwrite: true
 
 terraform_domain_zone_map:
   diademiemi:

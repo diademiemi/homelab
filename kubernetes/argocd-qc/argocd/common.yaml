@@ -1,0 +1,42 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: common-proj
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  description: common Setup
+  destinations:
+    - namespace: '*'
+      server: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  sourceRepos:
+    - '*'
+...
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: common-app
+  namespace: argocd
+spec:
+  project: common-proj
+  destination:
+    namespace: 'common'
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: https://github.com/queercoded/argocd.git
+    targetRevision: 'main'
+    path: 'common'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+...
