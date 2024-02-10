@@ -4,7 +4,7 @@ helm:
   releaseName: cert-manager
   chart: cert-manager
   repo: https://partner-charts.rancher.io/
-  version: "v1.13.1"
+  version: "v1.13.2"
 
   values:
     installCRDs: true
