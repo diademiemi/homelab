@@ -3,7 +3,7 @@ helm:
   releaseName: argo-cd
   chart: argo-cd
   repo: https://partner-charts.rancher.io/
-  version: "5.36.1"
+  version: "5.53.8"
 
   values:
     server:

@@ -4,7 +4,7 @@ helm:
   releaseName: longhorn
   chart: longhorn
   repo: https://charts.rancher.io/
-  version: "102.3.0+up1.5.1"
+  version: "103.2.1+up1.5.3"
 
   values:
     persistence:

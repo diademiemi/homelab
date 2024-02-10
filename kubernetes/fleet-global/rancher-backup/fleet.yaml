@@ -4,7 +4,7 @@ helm:
   releaseName: rancher-backup
   chart: rancher-backup
   repo: https://charts.rancher.io/
-  version: "102.0.1+up3.1.1"
+  version: "103.0.0+up4.0.0"
 
   values:
     s3:
