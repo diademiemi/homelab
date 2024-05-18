@@ -8,7 +8,7 @@ helmCharts:
     releaseName: nextcloud
     namespace: nextcloud
     repo: https://nextcloud.github.io/helm/
-    version: "4.3.1"
+    version: "4.6.8"
     valuesInline:
       nextcloud:
         update: 1  # Trigger update
