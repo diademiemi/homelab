@@ -10,6 +10,7 @@ helmCharts:
       image:
         repository: vaultwarden/server
         pullPolicy: IfNotPresent
+        tag: 1.30.5
 
       env:
         SIGNUPS_ALLOWED: false
