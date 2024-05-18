@@ -1,12 +1,16 @@
 module "vm" {
   source  = "diademiemi/vm/libvirt"
-  version = "4.1.0"
+  version = "6.0.1"
   depends_on = [ libvirt_network.local_net ]
 
-  for_each = { for vm in var.vms : vm.hostname => vm }
+  for_each = { for vm in var.vms : vm.name => vm }
 
-    hostname = each.value.hostname
+    name = each.value.name
     domain = each.value.domain
+
+    password_auth = false
+    root_password = ""
+    allow_root_ssh_pwauth = false
 
     vcpu = each.value.vcpu
     memory = each.value.memory

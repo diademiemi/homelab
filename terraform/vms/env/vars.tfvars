@@ -1,6 +1,6 @@
 vms = [
     {
-        hostname = "basil" # Upstream Rancher cluster
+        name = "basil" # Upstream Rancher cluster
         domain = "blahaj.sh"
 
         vcpu = 4
@@ -55,7 +55,7 @@ vms = [
         ansible_host   = "basil"
     },
     {
-        hostname = "aubrey" # For my private use
+        name = "aubrey" # For my private use
         domain = "blahaj.sh"
 
         vcpu = 12
@@ -114,7 +114,7 @@ vms = [
         ansible_host   = "aubrey"
     },
     {
-        hostname = "kel" # For services I host that need to be publically accessible
+        name = "kel" # For services I host that need to be publically accessible
         domain = "blahaj.sh"
 
         vcpu = 6
@@ -169,7 +169,7 @@ vms = [
         ansible_host   = "kel"
     },
     {
-        hostname = "hero" # For a group of people I'm working with, https://github.com/queercoded-dev
+        name = "hero" # For a group of people I'm working with, https://github.com/queercoded-dev
         domain = "queercoded.dev"
 
         vcpu = 6
