@@ -3,6 +3,4 @@ resources:
   - ./blahaj.yaml
   - ./media.yaml
   - ./vault.yaml
-  - ./gitlab.yaml
   - ./cloud.yaml
-  - ./libreddit.yaml

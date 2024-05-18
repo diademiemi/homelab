@@ -2,13 +2,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: libreddit-blahaj-cert
-  namespace: libreddit
+  name: git-blahaj-cert
+  namespace: forgejo
 spec:
-  secretName: libreddit-blahaj-cert
-  commonName: libreddit.blahaj.sh
+  secretName: git-blahaj-cert
+  commonName: "git.blahaj.sh"
   dnsNames:
-    - libreddit.blahaj.sh
+    - "git.blahaj.sh"
   issuerRef:
     name: blahaj-issuer
     kind: ClusterIssuer

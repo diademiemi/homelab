@@ -3,4 +3,3 @@ resources:
   - ./gitlab
   - ./site-blahaj-sh
   - ./nextcloud
-  - ./libreddit
