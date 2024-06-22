@@ -1,7 +1,0 @@
----
-system_hostname: "hero.blahaj.sh"
-rancher_cluster_name: "qc"
-
-agekey: "{{ vault_agekey }}"
-
-...

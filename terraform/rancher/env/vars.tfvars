@@ -13,10 +13,4 @@ rancher_clusters = [
 
         kubernetes_version = "v1.26.10+rke2r1"
     },
-    {
-        name = "qc"
-        fleet_namespace = "fleet-default"
-
-        kubernetes_version = "v1.26.10+rke2r1"
-    }
 ]

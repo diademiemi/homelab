@@ -1,8 +1,0 @@
-apiVersion: resources.cattle.io/v1
-kind: Backup
-metadata:
-  name: rancher-backups-qc
-spec:
-  resourceSetName: rancher-resource-set
-  retentionCount: 3
-  schedule: '0 10 * * *'

@@ -1,5 +1,0 @@
-resources:
-  - ../../base
-
-patches:
-  - app.yaml

@@ -1,4 +1,0 @@
-resources:
-  - rancher-backups/schedule.yaml
-  - argocd/common.yaml  # Deploy from github.com/queercoded-dev/argocd
-  - argocd/webring.yaml  # Deploy from github.com/queercoded-dev/argocd

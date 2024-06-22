@@ -14,10 +14,3 @@ targetCustomizations:
       identifier/name: public
   kustomize:
     dir: overlays/public
-
-- name: qc
-  clusterSelector:
-    matchLabels:
-      identifier/name: qc
-  kustomize:
-    dir: overlays/qc
